@@ -1,4 +1,5 @@
 ﻿using Serilog;
+using SmaugX.Core.Commands;
 using SmaugX.Core.Services;
 using System.Net;
 using System.Net.Sockets;
@@ -37,12 +38,8 @@ public class Client
 
             while ((bytesRead = await Stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
             {
-                string receivedData = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                Log.Information("Received: {receivedData}", receivedData);
-
-                // Do Echo
-                var responseBuffer = Encoding.UTF8.GetBytes(receivedData);
-                await Stream.WriteAsync(responseBuffer, 0, responseBuffer.Length);
+                var receivedData = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                await ReceivedData(receivedData);
             }
 
             Log.Information("Client disconnected - {ipAddress}", IpAddress);
@@ -71,6 +68,16 @@ public class Client
 
         // Send MOTD
         await SendMotd();
+    }
+
+    /// <summary>
+    /// Called when data is received from the client.
+    /// </summary>
+    private async Task ReceivedData(string data)
+    {
+        Log.Information("Received - {ipAddress}: {data}", IpAddress, data);
+        var command = new Command(this, data);
+        await CommandService.HandleCommand(command);
     }
 
     #endregion
