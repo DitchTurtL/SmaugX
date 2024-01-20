@@ -7,9 +7,10 @@ public class SystemInitializer
 {
     public static async Task StartUp()
     {
+        StartLogging();
+
         Log.Information("Starting up...");
 
-        StartLogging();
     }
 
     public static async Task ShutDown()
@@ -23,7 +24,6 @@ public class SystemInitializer
     {
         // Verify log directory exists
         var logPath = Path.Combine(Environment.CurrentDirectory, FileConstants.LOG_DIRECTORY);
-        Log.Debug("Verifying log directory exists - {logPath}", logPath);
         if (!Directory.Exists(logPath))
             Directory.CreateDirectory(FileConstants.LOG_DIRECTORY);
 
