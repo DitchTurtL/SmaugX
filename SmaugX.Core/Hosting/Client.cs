@@ -26,11 +26,12 @@ public class Client
     /// </summary>
     public async Task HandleClientAsync()
     {
-        await ClientConnected();
 
         try
         {
             Stream = Socket.GetStream();
+            await ClientConnected();
+
             var buffer = new byte[4096];
             int bytesRead;
 

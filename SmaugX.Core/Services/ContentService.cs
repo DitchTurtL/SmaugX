@@ -10,7 +10,7 @@ internal class ContentService
     /// </summary>
     internal static string[] Banner()
     {
-        return File.ReadAllLines(FileConstants.BANNER_FILE);
+        return File.ReadAllLines(FileConstants.BANNER_FILE_PATH);
     }
 
     /// <summary>
@@ -19,6 +19,6 @@ internal class ContentService
     /// </summary>
     internal static string[] Motd()
     {
-        return File.ReadAllLines(FileConstants.MOTD_FILE);
+        return File.ReadAllLines(FileConstants.MOTD_FILE_PATH);
     }
 }
