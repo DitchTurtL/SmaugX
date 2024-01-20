@@ -21,6 +21,7 @@ public static class Server
             {
                 var socket = await tcpListener.AcceptTcpClientAsync();
                 var client = new Client(socket);
+                Log.Information("Client connected - {ipAddress}", client.IpAddress);
                 _ = client.HandleClientAsync();
                 clients.Add(client);
             }
@@ -33,6 +34,11 @@ public static class Server
         {
             Log.Information("Server exiting...");
         }
+    }
+
+    private static async Task ClientConnected(Client client)
+    {
+
     }
 
     internal static void ClientExited(Client client)
