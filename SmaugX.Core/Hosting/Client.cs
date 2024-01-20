@@ -1,4 +1,5 @@
 ﻿using Serilog;
+using SmaugX.Core.Services;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -25,6 +26,8 @@ public class Client
     /// </summary>
     public async Task HandleClientAsync()
     {
+        await ClientConnected();
+
         try
         {
             Stream = Socket.GetStream();
@@ -53,6 +56,39 @@ public class Client
             Server.ClientExited(this);
         }
     }
+
+    #region Events
+
+    /// <summary>
+    /// Called when the client first connects.
+    /// </summary>
+    private async Task ClientConnected()
+    {
+
+        // Send Welcome banner
+        await SendBanner();
+
+        // Send MOTD
+        await SendMotd();
+    }
+
+    #endregion
+
+    #region Send Content to Client Helpers
+
+    private async Task SendBanner()
+    {
+        await SendLines(ContentService.Banner());
+    }
+
+    private async Task SendMotd()
+    {
+        await SendLines(ContentService.Motd());
+    }
+
+    #endregion
+
+    #region Send Data to Socket Helpers
 
     /// <summary>
     /// Sends binary data to the client socket.
@@ -89,4 +125,7 @@ public class Client
         foreach (var line in bannerLines)
             await SendLine(line);
     }
+
+    #endregion
+
 }
