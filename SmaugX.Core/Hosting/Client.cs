@@ -8,7 +8,7 @@ namespace SmaugX.Core.Hosting;
 public class Client
 {
     private TcpClient Socket { get; set; }
-    public string IpAddress => (Socket.Client.RemoteEndPoint as IPEndPoint)?.Address.ToString() ?? "Unknown";
+    public string IpAddress => (Socket?.Client?.RemoteEndPoint as IPEndPoint)?.Address.ToString() ?? "Unknown";
 
     public Client(TcpClient socket)
     {
