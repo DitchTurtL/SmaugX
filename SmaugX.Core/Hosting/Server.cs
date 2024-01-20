@@ -1,7 +1,7 @@
 ﻿using System.Net.Sockets;
-using System.Net;
 using Serilog;
 using SmaugX.Core.Constants;
+using SmaugX.Core.Services;
 
 namespace SmaugX.Core.Hosting;
 
@@ -21,9 +21,8 @@ public static class Server
             {
                 var socket = await tcpListener.AcceptTcpClientAsync();
                 var client = new Client(socket);
-                Log.Information("Client connected - {ipAddress}", client.IpAddress);
                 _ = client.HandleClientAsync();
-                clients.Add(client);
+                ClientConnected(client);
             }
         }
         catch (Exception ex)
@@ -38,7 +37,24 @@ public static class Server
 
     private static async Task ClientConnected(Client client)
     {
+        Log.Information("Client connected - {ipAddress}", client.IpAddress);
+        clients.Add(client);
 
+        // Send Welcome banner
+        await SendBanner(client);
+
+        // Send MOTD
+        await SendMotd(client);
+    }
+
+    private static async Task SendBanner(Client client)
+    {
+        await client.SendLines(ContentService.Banner());
+    }
+
+    private static async Task SendMotd(Client client)
+    {
+        await client.SendLines(ContentService.Motd());
     }
 
     internal static void ClientExited(Client client)
