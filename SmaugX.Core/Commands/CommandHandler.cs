@@ -34,6 +34,12 @@ internal class CommandHandler : ICommandHandler
                 // Except for authentication commands.
                 if (handler is AuthenticationCommandHandler)
                     await handler.HandleCommand(command);
+                
+                // If the authentication handler handled the command, break out of the loop.
+                if (command.Handled)
+                    break;
+
+                continue;
             }
 
             // If the command hasn't already been handled, handle it.
