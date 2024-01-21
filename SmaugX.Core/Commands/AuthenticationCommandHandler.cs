@@ -1,10 +1,11 @@
 ﻿
 using Serilog;
 using SmaugX.Core.Constants;
+using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Hosting;
 using SmaugX.Core.Services;
 
-namespace SmaugX.Core.Commands.Authentication;
+namespace SmaugX.Core.Commands;
 
 /// <summary>
 /// Handles all authentication commands.
@@ -13,15 +14,12 @@ internal class AuthenticationCommandHandler : ICommandHandler
 {
     public Task HandleCommand(ICommand command)
     {
-        switch (command.Client.AuthenticationState)
+        return command.Client.AuthenticationState switch
         {
-            case AuthenticationState.WaitingForEmail:
-                return HandleEmail(command);
-            case AuthenticationState.WaitingForPassword:
-                return HandlePassword(command);
-            default:
-                return Task.CompletedTask;
-        }
+            AuthenticationState.WaitingForEmail => HandleEmail(command),
+            AuthenticationState.WaitingForPassword => HandlePassword(command),
+            _ => Task.CompletedTask,
+        };
     }
 
     private async Task HandleEmail(ICommand command)
@@ -56,7 +54,7 @@ internal class AuthenticationCommandHandler : ICommandHandler
 
         // If the user supplied a password, attempt to authenticate.
         var user = await AuthenticationService.GetUser(command.Client.AuthenticatedEmailOrUsername, command.Name);
-        
+
         // If a user wasn't found, fail authentication and prompt again.
         if (user == null)
         {

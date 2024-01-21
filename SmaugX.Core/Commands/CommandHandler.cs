@@ -1,5 +1,6 @@
 ﻿using Serilog;
-using SmaugX.Core.Commands.Authentication;
+using SmaugX.Core.Data.Authentication;
+using SmaugX.Core.Data.Characters;
 
 namespace SmaugX.Core.Commands;
 
@@ -38,6 +39,16 @@ internal class CommandHandler : ICommandHandler
                 // If the authentication handler handled the command, break out of the loop.
                 if (command.Handled)
                     break;
+
+                continue;
+            }
+
+            // Require character creation or population before being able to interact with the world.
+            if (command.Client.CharacterCreationState != CharacterCreationState.Loaded)
+            {
+                // Only allow character creation commands for now.
+                if (handler is CharacterCreationCommandHandler)
+                    await handler.HandleCommand(command);
 
                 continue;
             }

@@ -8,4 +8,6 @@ internal class StringConstants
     public const string AUTHENTICATION_INVALID_CREDENTIALS = "Invalid credentials.";
     public const string AUTHENTICATION_SUCCESS = "Authentication successful.";
 
+
+
 }

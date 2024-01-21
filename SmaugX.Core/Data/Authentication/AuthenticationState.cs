@@ -1,4 +1,4 @@
-﻿namespace SmaugX.Core.Commands.Authentication;
+﻿namespace SmaugX.Core.Data.Authentication;
 
 internal enum AuthenticationState
 {
