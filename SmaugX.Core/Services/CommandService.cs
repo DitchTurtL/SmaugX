@@ -5,6 +5,9 @@ namespace SmaugX.Core.Services;
 
 internal static class CommandService
 {
+    /// <summary>
+    /// Holds our command handler.
+    /// </summary>
     private static CommandHandler commandHandler { get; } = new();
 
     public static async Task Initialize()

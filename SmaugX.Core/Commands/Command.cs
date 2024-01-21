@@ -11,9 +11,12 @@ internal class Command : ICommand
 
     public Command(Client client, string commandText)
     {
-        var commandParts = commandText.Split(' ');
+        // Remove line endings and new lines
+        commandText = commandText.ReplaceLineEndings().Replace(Environment.NewLine, string.Empty);
 
-        Name = commandParts[0].ToUpper();
+        var commandParts = commandText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        Name = commandParts[0];
         Parameters = commandParts.Skip(1).ToArray(); 
 
         Client = client;

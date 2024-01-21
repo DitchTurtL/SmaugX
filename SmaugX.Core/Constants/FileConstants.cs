@@ -14,4 +14,8 @@ internal static class FileConstants
     public static readonly string BANNER_FILE_PATH = Path.Combine(HOSTING_CONTENT_PATH, BANNER_FILE);
     public const string MOTD_FILE = "MOTD.dat";
     public static readonly string MOTD_FILE_PATH = Path.Combine(HOSTING_CONTENT_PATH, MOTD_FILE);
+
+    // Database
+    public const string DATABASE_FILE = "smaugx.db";
+    public static readonly string DATABASE_PATH = Path.Combine(CONTENT_DIRECTORY, DATABASE_FILE);
 }

@@ -13,21 +13,45 @@ internal class CommandHandler : ICommandHandler
 {
     private List<ICommandHandler> commandHandlers { get; } = new();
 
-
+    /// <summary>
+    /// Initializes all command handlers.
+    /// </summary>
     public CommandHandler()
     {
+        Log.Information("Initializing Command Handler...");
         commandHandlers.Add(new AuthenticationCommandHandler());
     }
 
     public async Task HandleCommand(ICommand command)
     {
+        // We can have multiple command handlers
+        // for different modules of the game.
         foreach (var handler in commandHandlers)
         {
-            await handler.HandleCommand(command);
+            // Don't handle any commands if the client is not authenticated.
+            if (command.Client.AuthenticationState != AuthenticationState.Authenticated)
+            {
+                // Except for authentication commands.
+                if (handler is AuthenticationCommandHandler)
+                    await handler.HandleCommand(command);
+                
+                // If the authentication handler handled the command, break out of the loop.
+                if (command.Handled)
+                    break;
+
+                continue;
+            }
+
+            // If the command hasn't already been handled, handle it.
+            if (!command.Handled)
+                await handler.HandleCommand(command);
+
+            // If the command has been handled, break out of the loop.
             if (command.Handled)
                 break;
         }
 
+        // If the command hasn't been handled, handle it ourselves.
         if (!command.Handled)
             await HandleBaseCommand(command);
     }
@@ -57,7 +81,7 @@ internal class CommandHandler : ICommandHandler
     /// </summary>
     private async Task HandleUnknownCommand(ICommand command)
     {
-        Log.Warning("Unknown command - {ipAddress}: {command.Name} parameters: {params}",
+        Log.Warning("Unknown command - {ipAddress}: {command} parameters: {params}",
             command.Client.IpAddress, command.Name, string.Join(" ", command.Parameters));
         await Task.CompletedTask;
     }

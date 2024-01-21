@@ -1,5 +1,7 @@
 ﻿using Serilog;
 using SmaugX.Core.Commands;
+using SmaugX.Core.Commands.Authentication;
+using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Services;
 using System.Net;
 using System.Net.Sockets;
@@ -11,6 +13,10 @@ public class Client
 {
     private TcpClient Socket { get; set; }
     private NetworkStream? Stream { get; set; }
+    private Queue<string> OutputQueue { get; set; } = new();
+    public string AuthenticatedEmailOrUsername { get; set; }
+    internal User? AuthenticatedUser { get; set; } = null;
+    internal AuthenticationState AuthenticationState { get; set; } = AuthenticationState.NotAuthenticated;
 
     /// <summary>
     /// Returns IP Address of connected client socket.
@@ -66,8 +72,7 @@ public class Client
         // Send Welcome banner
         await SendBanner();
 
-        // Send MOTD
-        await SendMotd();
+        await AuthenticationService.StartAuthentication(this);
     }
 
     /// <summary>
@@ -75,6 +80,9 @@ public class Client
     /// </summary>
     private async Task ReceivedData(string data)
     {
+        if (string.IsNullOrEmpty(data))
+            return;
+
         Log.Information("Received - {ipAddress}: {data}", IpAddress, data);
         var command = new Command(this, data);
         await CommandService.HandleCommand(command);
@@ -84,12 +92,18 @@ public class Client
 
     #region Send Content to Client Helpers
 
+    /// <summary>
+    /// Sends the welcome banner to the client.
+    /// </summary>
     private async Task SendBanner()
     {
         await SendLines(ContentService.Banner());
     }
 
-    private async Task SendMotd()
+    /// <summary>
+    /// Sends the MOTD to the client.
+    /// </summary>
+    public async Task SendMotd()
     {
         await SendLines(ContentService.Motd());
     }
@@ -115,7 +129,12 @@ public class Client
         if (!text.EndsWith(Environment.NewLine))
             text += Environment.NewLine;
 
-        Log.Debug("Sending Line - {ipAddress}: {line}", IpAddress, text);
+        await SendText(text);
+    }
+
+    internal async Task SendText(string text)
+    {
+        Log.Debug("Sending data - {ipAddress}: {line}", IpAddress, text);
         var bytes = Encoding.UTF8.GetBytes(text);
 
         try
