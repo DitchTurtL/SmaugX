@@ -15,7 +15,7 @@ internal static class AuthenticationService
     internal static async Task StartAuthentication(Client client)
     {
         client.AuthenticationState = AuthenticationState.WaitingForEmail;
-        await client.SendText(StringConstants.AUTHENTICATION_PROMPT_USERNAME);
+        await client.SendSystemMessage(StringConstants.AUTHENTICATION_PROMPT_USERNAME);
     }
 
 }

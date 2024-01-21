@@ -8,6 +8,9 @@ internal class StringConstants
     public const string AUTHENTICATION_INVALID_CREDENTIALS = "Invalid credentials.";
     public const string AUTHENTICATION_SUCCESS = "Authentication successful.";
 
-
+    // Default message colors
+    public const string MESSAGE_COLOR_SYSTEM = "GREEN";
+    public const string MESSAGE_COLOR_BANNER = "BLUE";
+    public const string MESSAGE_COLOR_MOTD = "RED";
 
 }

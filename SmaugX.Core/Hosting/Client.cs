@@ -105,7 +105,7 @@ public class Client
     /// </summary>
     private async Task SendBanner()
     {
-        await SendLines(ContentService.Banner());
+        await SendLines(ContentService.Banner(), MessageColor.Banner);
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public class Client
     /// </summary>
     public async Task SendMotd()
     {
-        await SendLines(ContentService.Motd());
+        await SendLines(ContentService.Motd(), MessageColor.Motd);
     }
 
     #endregion
@@ -128,24 +128,31 @@ public class Client
         await Stream!.WriteAsync(data, 0, data.Length);
     }
 
+    internal async Task SendSystemMessage(string text)
+    {
+        await SendLine(text, MessageColor.System);
+    }
+
     /// <summary>
     /// Sends a complete line of text to the client.
     /// Appends a NewLine if it does not exist.
     /// </summary>
-    internal async Task SendLine(string text)
+    internal async Task SendLine(string text, MessageColor messageColor = MessageColor.None)
     {
-        if (!text.EndsWith(Environment.NewLine))
-            text += Environment.NewLine;
-
-        await SendText(text);
-    }
-
-    internal async Task SendText(string text)
-    {
-        Log.Debug("Sending data - {ipAddress}: {line}", IpAddress, text);
+        // Remove all line endings and new lines.
+        text = text.ReplaceLineEndings().Replace(Environment.NewLine, string.Empty);
 
         // Colorize the text before sending.
-        text = Colors.Colorize(text) + Environment.NewLine;
+        text = Colors.Colorize(text, messageColor);
+
+        text += Environment.NewLine;
+
+        await SendText(text, messageColor);
+    }
+
+    private async Task SendText(string text, MessageColor messageColor = MessageColor.None)
+    {
+        Log.Debug("Sending data - {ipAddress}: {line}", IpAddress, text);
 
         var bytes = Encoding.UTF8.GetBytes(text);
 
@@ -162,10 +169,10 @@ public class Client
     /// <summary>
     /// Sends a number of lines to the client.
     /// </summary>
-    internal async Task SendLines(string[] bannerLines)
+    internal async Task SendLines(string[] lines, MessageColor messageColor = MessageColor.None)
     {
-        foreach (var line in bannerLines)
-            await SendLine(line);
+        foreach (var line in lines)
+            await SendLine(line, messageColor);
     }
 
     /// <summary>

@@ -18,7 +18,7 @@ internal static class GameService
 
         Characters.Add(client.Character!);
 
-        await client.SendText($"Welcome back, {characterName}!");
+        await client.SendLine($"Welcome back, {characterName}!");
     }
 
     /// <summary>

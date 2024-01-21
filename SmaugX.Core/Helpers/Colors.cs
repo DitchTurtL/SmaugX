@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using SmaugX.Core.Constants;
+using System.Text;
 
 namespace SmaugX.Core.Helpers;
 
@@ -59,8 +60,18 @@ internal static class Colors
     /// </summary>
     /// <param name="text"></param>
     /// <returns></returns>
-    public static string Colorize(string text)
+    public static string Colorize(string text, MessageColor messageColor = MessageColor.None)
     {
+        // if we're not colorizing manually, check for a message color.
+        if (!text.Contains('#'))
+        {
+            if (messageColor == MessageColor.None)
+                return text;
+
+            // Override color based on message color.
+            return ColorizeString(text, messageColor);
+        }
+
         var sb = new StringBuilder();
         for (var i = 0; i< text.Length; i++)
         {
@@ -90,7 +101,7 @@ internal static class Colors
             var colorizeString = text.Substring(colorizeStart, colorizeEnd - colorizeStart);
             var colorizedText = ColorizeString(colorizeString);
             sb.Append(colorizedText);
-            i = colorizeEnd + 1; // Skip the colorized string and the closing characters.
+            i = colorizeEnd; // Skip the colorized string and the closing characters.
         }
 
         return sb.ToString();
@@ -101,15 +112,20 @@ internal static class Colors
     /// </summary>
     /// <param name="text"></param>
     /// <returns></returns>
-    private static string ColorizeString(string text)
+    private static string ColorizeString(string text, MessageColor messageColor = MessageColor.None)
     {
-        // replace new lines
-        var needsNewLine = false;
-        text = text.ReplaceLineEndings();
-        if (text.EndsWith(Environment.NewLine))
+        // If a message color is specified, wrap the text in the appropriate color tags.
+        if (messageColor != MessageColor.None)
         {
-            needsNewLine = true;
-            text = text.Substring(0, text.Length - 2);
+            var color = messageColor switch
+            {
+                MessageColor.System => StringConstants.MESSAGE_COLOR_SYSTEM,
+                MessageColor.Banner => StringConstants.MESSAGE_COLOR_BANNER,
+                MessageColor.Motd => StringConstants.MESSAGE_COLOR_MOTD,
+                _ => string.Empty
+            };
+
+            text = $"{color}(*{text}*)";
         }
 
         var colorTag = text.Substring(0, text.IndexOf("(*"));
@@ -117,20 +133,19 @@ internal static class Colors
 
         var foreground = GetColor(colorTagParts[0]);
         var background = colorTagParts.Length > 1 ? GetBackgroundColor(colorTagParts[1]) : BackgroundColor.None;
-        
+
         var colorTagEnd = colorTag.Length + 2;
         var textToColorize = text.Substring(colorTagEnd, text.Length - 2 - colorTagEnd);
 
-        var sb = new StringBuilder();
         var fgText = $"{ESC}{(int)foreground}{ESC_END}";
         var bgText = (int)background > 0 ? $"{ESC}{(int)background}{ESC_END}" : string.Empty;
+
+        var sb = new StringBuilder();
         sb.Append(fgText);
         sb.Append(bgText);
         sb.Append(textToColorize);
         var reset = RESET;
         sb.Append(RESET);
-        if (needsNewLine)
-            sb.Append(Environment.NewLine);
         return sb.ToString();
     }
 

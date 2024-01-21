@@ -8,6 +8,6 @@ internal class CharacterCreationService
 {
     internal static async Task StartCharacterCreation(Client client)
     {
-        await client.SendText(CharacterCreationConstants.CHARACTER_PROMPT_START);
+        await client.SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_START);
     }
 }
