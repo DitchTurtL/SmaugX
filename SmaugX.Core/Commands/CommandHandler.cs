@@ -21,6 +21,7 @@ internal class CommandHandler : ICommandHandler
     {
         Log.Information("Initializing Command Handler...");
         commandHandlers.Add(new AuthenticationCommandHandler());
+        commandHandlers.Add(new CharacterCreationCommandHandler());
     }
 
     public async Task HandleCommand(ICommand command)

@@ -46,7 +46,7 @@ internal class CharacterCreationCommandHandler : ICommandHandler
                 }
 
                 // Play character select header and list characters
-                await command.Client.SendText(CharacterCreationConstants.CHARACTER_SELECT_HEADER);
+                await command.Client.SendLine(CharacterCreationConstants.CHARACTER_SELECT_HEADER);
                 await command.Client.SendLines(names.ToArray());
 
                 // Prompt for character name to load

@@ -32,5 +32,7 @@ internal static class GameService
         AuthenticatedClients.Add(client);
 
         await client.SendMotd();
+
+        await CharacterCreationService.StartCharacterCreation(client);
     }
 }

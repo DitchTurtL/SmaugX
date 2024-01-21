@@ -1,15 +1,15 @@
-﻿using SmaugX.Core.Constants;
-using SmaugX.Core.Data.Authentication;
-using Dapper;
-using SmaugX.Core.Helpers;
+﻿using Dapper;
 using Npgsql;
+using SmaugX.Core.Constants;
+using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
+using SmaugX.Core.Helpers;
 
 namespace SmaugX.Core.Services;
 
 internal static class DatabaseService
 {
-    internal static Task<Character?> GetCharacterByNameWithUserId(string name, int id)
+    internal static async Task<Character?> GetCharacterByNameWithUserId(string name, int id)
     {
         using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
         connection.Open();
@@ -18,7 +18,7 @@ internal static class DatabaseService
         var query = "SELECT * FROM characters WHERE name = @name AND user_id = @id";
         var param = new { name, id };
 
-        return connection.QueryFirstOrDefaultAsync<Character>(query, param);
+        return await connection.QueryFirstOrDefaultAsync<Character>(query, param);
     }
 
     internal static async Task<IEnumerable<Character>> GetCharactersByUserId(int id)
