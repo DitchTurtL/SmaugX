@@ -16,3 +16,7 @@ NUnit Test Project
 - Newtonsoft.Json
 - Dapper
 - System.Data.SQLite
+
+## Test User in SQLite DB
+username: Test
+password: Test
