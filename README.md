@@ -12,7 +12,7 @@ Core services for server.
 NUnit Test Project
 
 ## Dependencies
-Serilog
-Newtonsoft.Json
-Dapper
-System.Data.SQLite
+-Serilog
+-Newtonsoft.Json
+-Dapper
+-System.Data.SQLite
