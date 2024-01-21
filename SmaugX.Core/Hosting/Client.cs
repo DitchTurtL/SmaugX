@@ -2,6 +2,7 @@
 using SmaugX.Core.Commands;
 using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
+using SmaugX.Core.Helpers;
 using SmaugX.Core.Services;
 using System.Net;
 using System.Net.Sockets;
@@ -142,6 +143,10 @@ public class Client
     internal async Task SendText(string text)
     {
         Log.Debug("Sending data - {ipAddress}: {line}", IpAddress, text);
+
+        // Colorize the text before sending.
+        text = Colors.Colorize(text) + Environment.NewLine;
+
         var bytes = Encoding.UTF8.GetBytes(text);
 
         try
