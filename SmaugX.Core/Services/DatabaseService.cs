@@ -1,8 +1,8 @@
 ﻿using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Authentication;
-using System.Data.SQLite;
 using Dapper;
 using SmaugX.Core.Helpers;
+using Npgsql;
 
 namespace SmaugX.Core.Services;
 
@@ -10,11 +10,11 @@ internal static class DatabaseService
 {
     internal static async Task<User?> GetUser(string usernameOrEmail, string password)
     {
-        using var connection = new SQLiteConnection(SystemConstants.CONNECTION_STRING);
+        using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
         connection.Open();
 
         // Get users with matching username or email
-        var query = "SELECT * FROM Users WHERE Name = @nOrE OR Email = @nOrE";
+        var query = "SELECT * FROM Users WHERE name = @nOrE OR email = @nOrE";
         var param = new { nOrE = usernameOrEmail };
 
         var users = await connection.QueryAsync<User>(query, param);

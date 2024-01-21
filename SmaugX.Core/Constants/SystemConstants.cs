@@ -9,5 +9,11 @@ internal class SystemConstants
     public const int PORT = 4000;
 
     // Database constants
-    public static readonly string CONNECTION_STRING = $"Data Source={FileConstants.DATABASE_PATH};Version=3;";
+    private const string DATABASE_HOST = "192.168.0.202";
+    private const int DATABASE_PORT = 5432;
+    private const string DATABASE_NAME = "smaugx";
+    private const string DATABASE_USERNAME = "postgres";
+    private const string DATABASE_PASSWORD = "postgres";
+    public static readonly string CONNECTION_STRING = $"Host={DATABASE_HOST};Port={DATABASE_PORT};Database={DATABASE_NAME};Username={DATABASE_USERNAME};Password={DATABASE_PASSWORD}";
+
 }
