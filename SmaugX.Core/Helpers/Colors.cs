@@ -111,7 +111,17 @@ internal static class Colors
     /// Replaces color tags with the appropriate ESC sequences.
     /// </summary>
     /// <param name="text"></param>
+    /// <param name="messageColor">
+    ///     This is used to override the color tag with a message color.
+    ///     This can be used as a base color for all text, but needs to be 
+    ///     updated to support a recursive color tag system so certain words 
+    ///     could still be colorized
+    ///     MessageColor is just an enum that refers to a specific string constant below.
+    ///     This lets us specify default message colors like RED, BLUE, etc. 
+    ///     That could probably be better too
+    /// </param>
     /// <returns></returns>
+    // TODO: Some stuff to fix colorization up.
     private static string ColorizeString(string text, MessageColor messageColor = MessageColor.None)
     {
         // If a message color is specified, wrap the text in the appropriate color tags.
