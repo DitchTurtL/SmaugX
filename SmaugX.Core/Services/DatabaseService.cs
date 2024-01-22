@@ -3,6 +3,7 @@ using Npgsql;
 using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
+using SmaugX.Core.Data.World.Rooms;
 using SmaugX.Core.Helpers;
 
 namespace SmaugX.Core.Services;
@@ -31,6 +32,18 @@ internal static class DatabaseService
         var param = new { id };
 
         return await connection.QueryAsync<Character>(query, param);
+    }
+
+    internal static Room? GetRoomById(int id)
+    {
+        using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
+        connection.Open();
+
+        // Get room with matching id
+        var query = "SELECT * FROM rooms WHERE id = @id";
+        var param = new { id };
+
+        return connection.QueryFirstOrDefault<Room>(query, param);
     }
 
     internal static async Task<User?> GetUser(string usernameOrEmail, string password)

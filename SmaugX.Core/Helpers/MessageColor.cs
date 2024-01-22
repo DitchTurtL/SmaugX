@@ -6,4 +6,5 @@ internal enum MessageColor
     System,
     Banner,
     Motd,
+    Status,
 }

@@ -127,14 +127,7 @@ internal static class Colors
         // If a message color is specified, wrap the text in the appropriate color tags.
         if (messageColor != MessageColor.None)
         {
-            var color = messageColor switch
-            {
-                MessageColor.System => StringConstants.MESSAGE_COLOR_SYSTEM,
-                MessageColor.Banner => StringConstants.MESSAGE_COLOR_BANNER,
-                MessageColor.Motd => StringConstants.MESSAGE_COLOR_MOTD,
-                _ => string.Empty
-            };
-
+            var color = StringConstants.GetSystemColor(messageColor);
             text = $"{color}(*{text}*)";
         }
 
