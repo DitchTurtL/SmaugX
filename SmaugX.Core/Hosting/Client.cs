@@ -1,5 +1,6 @@
 ﻿using Serilog;
 using SmaugX.Core.Commands;
+using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
 using SmaugX.Core.Helpers;
@@ -15,15 +16,20 @@ public class Client
     // Sockets
     private TcpClient Socket { get; set; }
     private NetworkStream? Stream { get; set; }
-    private Queue<string> OutputQueue { get; set; } = new();
 
     // Authentication
     public string AuthenticatedEmailOrUsername { get; set; }
     internal User? AuthenticatedUser { get; set; } = null;
     internal AuthenticationState AuthenticationState { get; set; } = AuthenticationState.NotAuthenticated;
-    
+
     // Character
-    internal Character? Character { get; set; } = null;
+    private Character? character = null;
+    internal Character Character 
+    { 
+        get => character ??= new Character();
+        set => character = value;
+    }
+
     internal CharacterCreationState CharacterCreationState { get; set; } = CharacterCreationState.None;
 
     /// <summary>
@@ -199,10 +205,16 @@ public class Client
 
     internal async Task CharacterSelected(Character character)
     {
+        character.Client = this;
         Character = character;
-
+        
         // Notify the game service that the character has joined.
         await GameService.CharacterJoined(this);
+    }
+
+    internal async Task SendSeparator()
+    {
+        await SendLine(StringConstants.SEPARATOR);
     }
 
     #endregion
