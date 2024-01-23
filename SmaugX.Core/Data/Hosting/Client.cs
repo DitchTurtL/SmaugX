@@ -16,7 +16,6 @@ public class Client
     private readonly IGameService gameService;
     private readonly ICommandService commandService;
     private readonly IDatabaseService databaseService;
-    private readonly IAuthenticationService authenticationService;
 
     // Sockets
     private TcpClient Socket { get; set; }
@@ -42,13 +41,12 @@ public class Client
     /// </summary>
     public string IpAddress => (Socket?.Client?.RemoteEndPoint as IPEndPoint)?.Address.ToString() ?? "Unknown";
 
-    public Client(TcpClient socket, IGameService gameService, ICommandService commandService, IDatabaseService databaseService, IAuthenticationService authenticationService)
+    public Client(TcpClient socket, IGameService gameService, ICommandService commandService, IDatabaseService databaseService)
     {
         Socket = socket;
         this.gameService = gameService;
         this.commandService = commandService;
         this.databaseService = databaseService;
-        this.authenticationService = authenticationService;
     }
 
     /// <summary>
@@ -95,7 +93,7 @@ public class Client
         // Send Welcome banner
         await SendBanner();
 
-        authenticationService.StartAuthentication(this);
+        StartAuthentication(this);
     }
 
     /// <summary>
@@ -228,4 +226,14 @@ public class Client
 
     #endregion
 
+    internal void StartCharacterCreation(Client client)
+    {
+        SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_START);
+    }
+
+    internal void StartAuthentication(Client client)
+    {
+        AuthenticationState = AuthenticationState.WaitingForEmail;
+        SendSystemMessage(StringConstants.AUTHENTICATION_PROMPT_USERNAME);
+    }
 }

@@ -12,12 +12,12 @@ namespace SmaugX.Core.Commands;
 internal class AuthenticationCommandHandler : ICommandHandler
 {
     private readonly IGameService gameService;
-    private readonly IAuthenticationService authenticationService;
+    private readonly IDatabaseService databaseService;
 
-    public AuthenticationCommandHandler(IGameService gameService, IAuthenticationService authenticationService)
+    public AuthenticationCommandHandler(IGameService gameService, IDatabaseService databaseService)
     {
         this.gameService = gameService;
-        this.authenticationService = authenticationService;
+        this.databaseService = databaseService;
     }
 
     public void HandleCommand(ICommand command)
@@ -37,7 +37,7 @@ internal class AuthenticationCommandHandler : ICommandHandler
         if (string.IsNullOrEmpty(command.Name))
         {
             await command.Client.SendSystemMessage(StringConstants.AUTHENTICATION_INVALID_CREDENTIALS);
-            authenticationService.StartAuthentication(command.Client);
+            command.Client.StartAuthentication(command.Client);
             command.Handled = true;
             return;
         }
@@ -56,20 +56,20 @@ internal class AuthenticationCommandHandler : ICommandHandler
         if (string.IsNullOrEmpty(command.Name))
         {
             await command.Client.SendSystemMessage(StringConstants.AUTHENTICATION_INVALID_CREDENTIALS);
-            authenticationService.StartAuthentication(command.Client);
+            command.Client.StartAuthentication(command.Client);
             command.Handled = true;
             return;
         }
 
         // If the user supplied a password, attempt to authenticate.
-        var user = authenticationService.GetUser(command.Client.AuthenticatedEmailOrUsername, command.Name);
+        var user = databaseService.GetUserForAuth(command.Client.AuthenticatedEmailOrUsername, command.Name);
 
         // If a user wasn't found, fail authentication and prompt again.
         if (user == null)
         {
             Log.Warning("Failed authentication for {emailOrUsername} from {ipAddress}", command.Client.AuthenticatedEmailOrUsername, command.Client.IpAddress);
             await command.Client.SendSystemMessage(StringConstants.AUTHENTICATION_INVALID_CREDENTIALS);
-            authenticationService.StartAuthentication(command.Client);
+            command.Client.StartAuthentication(command.Client);
             command.Handled = true;
             return;
         }

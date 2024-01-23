@@ -11,14 +11,12 @@ public class TcpServerService : IHostedService
     private readonly IGameService gameService;
     private readonly ICommandService commandService;
     private readonly IDatabaseService databaseService;
-    private readonly IAuthenticationService authenticationService;
 
-    public TcpServerService(IGameService gameService, ICommandService commandService, IDatabaseService databaseService, IAuthenticationService authenticationService)
+    public TcpServerService(IGameService gameService, ICommandService commandService, IDatabaseService databaseService)
     {
         this.gameService = gameService;
         this.commandService = commandService;
         this.databaseService = databaseService;
-        this.authenticationService = authenticationService;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -32,7 +30,7 @@ public class TcpServerService : IHostedService
             while (true)
             {
                 var socket = await tcpListener.AcceptTcpClientAsync();
-                var client = new Client(socket, gameService, commandService, databaseService, authenticationService);
+                var client = new Client(socket, gameService, commandService, databaseService);
                 _ = client.HandleClientAsync();
                 gameService.ClientConnected(client);
             }

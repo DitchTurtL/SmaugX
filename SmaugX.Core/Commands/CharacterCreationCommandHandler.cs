@@ -42,7 +42,7 @@ internal class CharacterCreationCommandHandler : ICommandHandler
                 if (!names.Any())
                 {
                     await command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_NO_CHARACTERS_TO_LOAD);
-                    await CharacterCreationService.StartCharacterCreation(command.Client);
+                    command.Client.StartCharacterCreation(command.Client);
                     command.Handled = true;
                     return;
                 }

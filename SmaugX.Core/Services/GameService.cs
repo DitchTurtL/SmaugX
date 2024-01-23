@@ -30,7 +30,7 @@ public class GameService : IGameService
 
         await client.SendMotd();
 
-        await CharacterCreationService.StartCharacterCreation(client);
+        client.StartCharacterCreation(client);
     }
 
     /// <summary>
