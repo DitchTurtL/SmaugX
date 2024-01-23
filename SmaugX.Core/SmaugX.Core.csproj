@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\World\Areas\**" />
+    <EmbeddedResource Remove="Data\World\Areas\**" />
+    <None Remove="Data\World\Areas\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Content\Hosting\Banner.dat" />
     <None Remove="Content\Hosting\MOTD.dat" />
   </ItemGroup>
@@ -34,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\World\Areas\" />
     <Folder Include="SQLScripts\" />
   </ItemGroup>
 

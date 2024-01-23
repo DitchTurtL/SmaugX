@@ -1,9 +1,7 @@
 ﻿using SmaugX.Core.Constants;
-using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
-using SmaugX.Core.Services;
 
-namespace SmaugX.Core.Commands;
+namespace SmaugX.Core.Commands.CommandHandlers;
 
 internal class CharacterCreationCommandHandler : ICommandHandler
 {
@@ -28,7 +26,7 @@ internal class CharacterCreationCommandHandler : ICommandHandler
         {
             case "NEW":
                 command.Client.CharacterCreationState = CharacterCreationState.WaitingForName;
-                await command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_NEW_NAME);
+                command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_NEW_NAME);
                 command.Handled = true;
                 break;
             case "LOAD":
@@ -41,22 +39,22 @@ internal class CharacterCreationCommandHandler : ICommandHandler
                 // If no characters, start new character creation
                 if (!names.Any())
                 {
-                    await command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_NO_CHARACTERS_TO_LOAD);
+                    command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_NO_CHARACTERS_TO_LOAD);
                     command.Client.StartCharacterCreation(command.Client);
                     command.Handled = true;
                     return;
                 }
 
                 // Play character select header and list characters
-                await command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_SELECT_HEADER);
-                await command.Client.SendLines(names.ToArray());
+                command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_SELECT_HEADER);
+                command.Client.SendLines(names.ToArray());
 
                 // Prompt for character name to load
-                await command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_NAME_TO_LOAD);
+                command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_NAME_TO_LOAD);
                 command.Handled = true;
                 break;
             default:
-                await command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_NEW_OR_LOAD);
+                command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_NEW_OR_LOAD);
                 command.Handled = true;
                 break;
         }
@@ -70,7 +68,7 @@ internal class CharacterCreationCommandHandler : ICommandHandler
         // if nothing was supplied, prompt again.
         if (string.IsNullOrEmpty(command.Name))
         {
-            await command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_NAME_TO_LOAD);
+            command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_NAME_TO_LOAD);
             command.Handled = true;
             return;
         }
@@ -80,8 +78,8 @@ internal class CharacterCreationCommandHandler : ICommandHandler
         // If no character found, prompt again.
         if (character == null)
         {
-            await command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_NOT_FOUND);
-            await command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_NAME_TO_LOAD);
+            command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_NOT_FOUND);
+            command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_NAME_TO_LOAD);
             command.Handled = true;
             return;
         }

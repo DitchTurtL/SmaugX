@@ -28,7 +28,7 @@ public class GameService : IGameService
                                   client.AuthenticatedUser?.Email ?? "Unknown");
         AuthenticatedClients.Add(client);
 
-        await client.SendMotd();
+        client.SendMotd();
 
         client.StartCharacterCreation(client);
     }
@@ -50,7 +50,7 @@ public class GameService : IGameService
         roomService.CharacterJoined(client.Character);
 
         // Send welcome message
-        await client.SendLine($"Welcome back, {characterName}!");
+        client.SendLine($"Welcome back, {characterName}!");
 
         // Separate all of the intro stuff from World stuff.
         await client.SendSeparator();

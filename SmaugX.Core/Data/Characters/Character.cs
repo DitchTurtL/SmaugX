@@ -31,7 +31,7 @@ public class Character
         var sb = new StringBuilder();
         sb.AppendLine($"You are {StringConstants.GetPosition(Position)}");
         sb.AppendLine($" in {CurrentRoom?.Name ?? StringConstants.DEFAULT_CHARACTER_NAME}.");
-        await Client!.SendLine(sb.ToString(), Helpers.MessageColor.Status);
+        Client!.SendLine(sb.ToString(), Helpers.MessageColor.Status);
 
     }
 }

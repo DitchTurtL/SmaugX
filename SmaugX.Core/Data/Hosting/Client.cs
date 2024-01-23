@@ -8,6 +8,7 @@ using SmaugX.Core.Services;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Channels;
 
 namespace SmaugX.Core.Data.Hosting;
 
@@ -27,13 +28,7 @@ public class Client
     internal AuthenticationState AuthenticationState { get; set; } = AuthenticationState.NotAuthenticated;
 
     // Character
-    private Character? character = null;
-    internal Character Character
-    {
-        get => character ??= new Character();
-        set => character = value;
-    }
-
+    internal Character? Character { get; set; }
     internal CharacterCreationState CharacterCreationState { get; set; } = CharacterCreationState.None;
 
     /// <summary>
@@ -58,7 +53,8 @@ public class Client
         try
         {
             Stream = Socket.GetStream();
-            await ClientConnected();
+            _ = ConsumeMessagesAsync();
+            ClientConnected();
 
             var buffer = new byte[4096];
             int bytesRead;
@@ -66,7 +62,7 @@ public class Client
             while ((bytesRead = await Stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
             {
                 var receivedData = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                await ReceivedData(receivedData);
+                ReceivedData(receivedData);
             }
 
             Log.Information("Client disconnected - {ipAddress}", IpAddress);
@@ -82,16 +78,16 @@ public class Client
         }
     }
 
-    #region Events
+    #region Events and Triggers
 
     /// <summary>
     /// Called when the client first connects.
     /// </summary>
-    private async Task ClientConnected()
+    private void ClientConnected()
     {
 
         // Send Welcome banner
-        await SendBanner();
+        SendBanner();
 
         StartAuthentication(this);
     }
@@ -99,7 +95,7 @@ public class Client
     /// <summary>
     /// Called when data is received from the client.
     /// </summary>
-    private async Task ReceivedData(string data)
+    private void ReceivedData(string data)
     {
         if (string.IsNullOrEmpty(data))
             return;
@@ -109,6 +105,17 @@ public class Client
         commandService.HandleCommand(command);
     }
 
+    internal void StartCharacterCreation(Client client)
+    {
+        SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_START);
+    }
+
+    internal void StartAuthentication(Client client)
+    {
+        AuthenticationState = AuthenticationState.WaitingForEmail;
+        SendSystemMessage(StringConstants.AUTHENTICATION_PROMPT_USERNAME);
+    }
+
     #endregion
 
     #region Send Content to Client Helpers
@@ -116,41 +123,46 @@ public class Client
     /// <summary>
     /// Sends the welcome banner to the client.
     /// </summary>
-    private async Task SendBanner()
+    private void SendBanner()
     {
-        await SendLines(ContentHelper.Banner(), MessageColor.Banner);
+        SendLines(ContentHelper.Banner(), MessageColor.Banner);
     }
 
     /// <summary>
     /// Sends the MOTD to the client.
     /// </summary>
-    public async Task SendMotd()
+    public void SendMotd()
     {
-        await SendLines(ContentHelper.Motd(), MessageColor.Motd);
+        SendLines(ContentHelper.Motd(), MessageColor.Motd);
     }
 
     #endregion
 
     #region Send Data to Socket Helpers
-
+    
     /// <summary>
-    /// Sends binary data to the client socket.
+    /// Sends a message to the client with default SystemMessage color.
     /// </summary>
-    private async Task SendData(byte[] data)
+    /// <param name="text"></param>
+    internal void SendSystemMessage(string text)
     {
-        await Stream!.WriteAsync(data, 0, data.Length);
+        SendLine(text, MessageColor.System);
     }
 
-    internal async Task SendSystemMessage(string text)
+    /// <summary>
+    /// Sends a number of lines to the client.
+    /// </summary>
+    internal void SendLines(string[] lines, MessageColor messageColor = MessageColor.None)
     {
-        await SendLine(text, MessageColor.System);
+        foreach (var line in lines)
+            SendLine(line, messageColor);
     }
 
     /// <summary>
     /// Sends a complete line of text to the client.
     /// Appends a NewLine if it does not exist.
     /// </summary>
-    internal async Task SendLine(string text, MessageColor messageColor = MessageColor.None)
+    internal void SendLine(string text, MessageColor messageColor = MessageColor.None)
     {
         // Remove all line endings and new lines.
         text = text.ReplaceLineEndings().Replace(Environment.NewLine, string.Empty);
@@ -158,9 +170,32 @@ public class Client
         // Colorize the text before sending.
         text = Colors.Colorize(text, messageColor);
 
+        // Append the newline.
         text += Environment.NewLine;
 
-        await SendText(text, messageColor);
+        EnqueueMessage(text, messageColor);
+    }
+
+    // Send Queue / Channel to send messages to the client.
+    private readonly Channel<string> sendQueue = Channel.CreateUnbounded<string>();
+    /// <summary>
+    /// Runs in background and consumes messages from the send queue.
+    /// </summary>
+    private async Task ConsumeMessagesAsync()
+    {
+        var reader = sendQueue.Reader;
+
+        // Asynchronously iterate over the messages in the channel and send them
+        await foreach (string message in reader.ReadAllAsync())
+        {
+            await SendText(message);
+        }
+
+    }
+
+    private void EnqueueMessage(string message, MessageColor messageColor = MessageColor.None)
+    {
+        sendQueue.Writer.TryWrite(message);
     }
 
     private async Task SendText(string text, MessageColor messageColor = MessageColor.None)
@@ -171,7 +206,7 @@ public class Client
 
         try
         {
-            await SendData(bytes);
+            Task.Run(async () => await SendData(bytes)).Wait();
         }
         catch (Exception ex)
         {
@@ -180,13 +215,16 @@ public class Client
     }
 
     /// <summary>
-    /// Sends a number of lines to the client.
+    /// Sends binary data to the client socket.
     /// </summary>
-    internal async Task SendLines(string[] lines, MessageColor messageColor = MessageColor.None)
+    private async Task SendData(byte[] data)
     {
-        foreach (var line in lines)
-            await SendLine(line, messageColor);
+        await Stream!.WriteAsync(data, 0, data.Length);
     }
+
+    
+
+
 
     /// <summary>
     /// Returns all characters belonging to this user.
@@ -221,19 +259,10 @@ public class Client
 
     internal async Task SendSeparator()
     {
-        await SendLine(StringConstants.SEPARATOR);
+        SendLine(StringConstants.SEPARATOR);
     }
 
     #endregion
 
-    internal void StartCharacterCreation(Client client)
-    {
-        SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_START);
-    }
 
-    internal void StartAuthentication(Client client)
-    {
-        AuthenticationState = AuthenticationState.WaitingForEmail;
-        SendSystemMessage(StringConstants.AUTHENTICATION_PROMPT_USERNAME);
-    }
 }

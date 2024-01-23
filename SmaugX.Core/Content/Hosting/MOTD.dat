@@ -1,11 +1,2 @@
 Welcome to the new MUD!
 It's just getting started, but it's getting started!
-
-#BLACK:WHITE(*You are in a dark room.*)
-#RED(*There is a door to the north.*)
-#GREEN(*There is a door to the south.*)
-#YELLOW(*There is a door to the east.*)
-#BLUE(*There is a door to the west.*)
-#MAGENTA(*There is a door to the up.*)
-#CYAN(*There is a door to the down.*)
-#WHITE(*There is a door to the nowhere.*)

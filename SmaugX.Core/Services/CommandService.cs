@@ -1,5 +1,6 @@
 ﻿using Serilog;
 using SmaugX.Core.Commands;
+using SmaugX.Core.Commands.CommandHandlers;
 using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
 
