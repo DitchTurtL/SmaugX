@@ -38,6 +38,9 @@ public class GameService : IGameService
     /// </summary>
     public void CharacterJoined(Client client)
     {
+        if (client.Character == null)
+            Log.Error("Character is null, what broke?");
+
         var characterName = client.Character.Name;
 
         Log.Information("Character Joined - {ipAddress}[{username}] as {characterName}",
