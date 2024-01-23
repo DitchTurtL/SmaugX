@@ -1,4 +1,4 @@
-﻿using SmaugX.Core.Hosting;
+﻿using SmaugX.Core.Data.Hosting;
 
 namespace SmaugX.Core.Commands;
 

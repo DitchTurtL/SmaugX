@@ -1,8 +1,8 @@
-﻿using SmaugX.Core.Hosting;
+﻿using SmaugX.Core.Data.Hosting;
 
 namespace SmaugX.Core.Commands;
 
-interface ICommand
+public interface ICommand
 {
     string Name { get; set; }
     string[] Parameters { get; set; }

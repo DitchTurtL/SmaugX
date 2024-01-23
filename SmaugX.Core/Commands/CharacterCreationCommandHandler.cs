@@ -7,9 +7,9 @@ namespace SmaugX.Core.Commands;
 
 internal class CharacterCreationCommandHandler : ICommandHandler
 {
-    public Task HandleCommand(ICommand command)
+    public void HandleCommand(ICommand command)
     {
-        return command.Client.CharacterCreationState switch
+        var commandTask = command.Client.CharacterCreationState switch
         {
             CharacterCreationState.None => HandleNewAndLoad(command),
             CharacterCreationState.WaitingForName => HandleName(command),
@@ -18,6 +18,8 @@ internal class CharacterCreationCommandHandler : ICommandHandler
             CharacterCreationState.Loading => HandleLoading(command),
             _ => HandleUnknown(command),
         };
+        commandTask.Wait();
+
     }
 
     private async Task HandleNewAndLoad(ICommand command)

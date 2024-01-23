@@ -6,13 +6,37 @@
 ///   Main appliation entry point.
 ///
 
-using SmaugX.Core.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using SmaugX.Core.Constants;
+using SmaugX.Core.Services;
 
-// Start Core services
-await SystemInitializer.StartUp();
 
-// Start Server running
-await Server.Start();
+// Verify log directory exists
+var logPath = Path.Combine(Environment.CurrentDirectory, FileConstants.LOG_DIRECTORY);
+if (!Directory.Exists(logPath))
+    Directory.CreateDirectory(FileConstants.LOG_DIRECTORY);
 
-// Shutdown Core services
-await SystemInitializer.ShutDown();
+// Start logger
+var logFile = Path.Combine(logPath, FileConstants.LOG_FILE);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File(logFile, rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+// Configure services
+using var host = Host.CreateDefaultBuilder(args)
+    .ConfigureServices((hostContext, services) =>
+    {
+        services.AddHostedService<TcpServerService>();
+        services.AddSingleton<IGameService, GameService>();
+        services.AddSingleton<ICommandService, CommandService>();
+    })
+    .Build();
+
+
+await host.RunAsync();
+
+// Flush logs
+await Log.CloseAndFlushAsync();

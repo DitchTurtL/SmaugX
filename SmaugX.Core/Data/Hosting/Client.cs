@@ -9,10 +9,13 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace SmaugX.Core.Hosting;
+namespace SmaugX.Core.Data.Hosting;
 
 public class Client
 {
+    private readonly IGameService gameService;
+    private readonly ICommandService commandService;
+
     // Sockets
     private TcpClient Socket { get; set; }
     private NetworkStream? Stream { get; set; }
@@ -24,8 +27,8 @@ public class Client
 
     // Character
     private Character? character = null;
-    internal Character Character 
-    { 
+    internal Character Character
+    {
         get => character ??= new Character();
         set => character = value;
     }
@@ -37,9 +40,11 @@ public class Client
     /// </summary>
     public string IpAddress => (Socket?.Client?.RemoteEndPoint as IPEndPoint)?.Address.ToString() ?? "Unknown";
 
-    public Client(TcpClient socket)
+    public Client(TcpClient socket, IGameService gameService, ICommandService commandService)
     {
         Socket = socket;
+        this.gameService = gameService;
+        this.commandService = commandService;
     }
 
     /// <summary>
@@ -71,7 +76,7 @@ public class Client
         finally
         {
             Socket.Close();
-            Server.ClientExited(this);
+            gameService.ClientExited(this);
         }
     }
 
@@ -99,7 +104,7 @@ public class Client
 
         Log.Information("Received - {ipAddress}: {data}", IpAddress, data);
         var command = new Command(this, data);
-        await CommandService.HandleCommand(command);
+        commandService.HandleCommand(command);
     }
 
     #endregion
@@ -207,9 +212,9 @@ public class Client
     {
         character.Client = this;
         Character = character;
-        
+
         // Notify the game service that the character has joined.
-        await GameService.CharacterJoined(this);
+        await gameService.CharacterJoined(this);
     }
 
     internal async Task SendSeparator()

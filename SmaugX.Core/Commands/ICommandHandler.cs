@@ -1,8 +1,8 @@
 ﻿namespace SmaugX.Core.Commands;
 
-interface ICommandHandler
+public interface ICommandHandler
 {
-    Task HandleCommand(ICommand command);
+    void HandleCommand(ICommand command);
 
 
 
