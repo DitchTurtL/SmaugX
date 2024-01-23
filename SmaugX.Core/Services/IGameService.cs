@@ -4,9 +4,9 @@ namespace SmaugX.Core.Services;
 
 public interface IGameService
 {
-    Task UserJoined(Client client);
-    Task CharacterJoined(Client client);
+    void UserJoined(Client client);
+    void CharacterJoined(Client client);
     void ClientConnected(Client client);
     void ClientExited(Client client);
-    Task ClientAuthenticated(Client client);
+    void ClientAuthenticated(Client client);
 }

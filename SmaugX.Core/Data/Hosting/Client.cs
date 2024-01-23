@@ -229,7 +229,7 @@ public class Client
     /// <summary>
     /// Returns all characters belonging to this user.
     /// </summary>
-    internal async Task<IEnumerable<Character>> GetCharacters()
+    internal List<Character> GetCharacters()
     {
         if (AuthenticatedUser == null)
             return new List<Character>();
@@ -240,7 +240,7 @@ public class Client
     /// <summary>
     /// Returns a character belonging to this User with the matching name.
     /// </summary>
-    internal async Task<Character?> GetCharacterByName(string name)
+    internal Character? GetCharacterByName(string name)
     {
         if (AuthenticatedUser == null)
             return null;
@@ -248,16 +248,16 @@ public class Client
         return databaseService.GetCharacterByIdAndName(AuthenticatedUser!.Id, name);
     }
 
-    internal async Task CharacterSelected(Character character)
+    internal void CharacterSelected(Character character)
     {
         character.Client = this;
         Character = character;
 
         // Notify the game service that the character has joined.
-        await gameService.CharacterJoined(this);
+        gameService.CharacterJoined(this);
     }
 
-    internal async Task SendSeparator()
+    internal void SendSeparator()
     {
         SendLine(StringConstants.SEPARATOR);
     }

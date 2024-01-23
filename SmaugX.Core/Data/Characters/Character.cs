@@ -26,7 +26,7 @@ public class Character
     public Client? Client { get; set; } = null!;
 
 
-    internal async Task ShowStatus()
+    internal void ShowStatus()
     {
         var sb = new StringBuilder();
         sb.AppendLine($"You are {StringConstants.GetPosition(Position)}");

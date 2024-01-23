@@ -21,16 +21,18 @@ internal class AuthenticationCommandHandler : ICommandHandler
 
     public void HandleCommand(ICommand command)
     {
-        var commandTask = command.Client.AuthenticationState switch
+        switch (command.Client.AuthenticationState)
         {
-            AuthenticationState.WaitingForEmail => HandleEmail(command),
-            AuthenticationState.WaitingForPassword => HandlePassword(command),
-            _ => Task.CompletedTask,
-        };
-        commandTask.Wait();
+            case AuthenticationState.WaitingForEmail:
+                HandleEmail(command);
+                break;
+            case AuthenticationState.WaitingForPassword:
+                HandlePassword(command);
+                break;
+        }
     }
 
-    private async Task HandleEmail(ICommand command)
+    private void HandleEmail(ICommand command)
     {
         // If nothing was supplied, prompt again.
         if (string.IsNullOrEmpty(command.Name))
@@ -49,7 +51,7 @@ internal class AuthenticationCommandHandler : ICommandHandler
         command.Handled = true;
     }
 
-    private async Task HandlePassword(ICommand command)
+    private void HandlePassword(ICommand command)
     {
         // If nothing was supplied, fail authentication and prompt again.
         if (string.IsNullOrEmpty(command.Name))
@@ -82,7 +84,7 @@ internal class AuthenticationCommandHandler : ICommandHandler
         command.Client.SendSystemMessage(StringConstants.AUTHENTICATION_SUCCESS);
 
         // Let the server know this client has authenticated.
-        await gameService.ClientAuthenticated(command.Client);
+        gameService.ClientAuthenticated(command.Client);
     }
 
 }

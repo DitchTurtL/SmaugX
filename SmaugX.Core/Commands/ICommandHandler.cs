@@ -4,6 +4,4 @@ public interface ICommandHandler
 {
     void HandleCommand(ICommand command);
 
-
-
 }

@@ -21,7 +21,7 @@ public class GameService : IGameService
     /// Called once the client has authenticated and is ready to 
     /// pick a character or create a new one.
     /// </summary>
-    public async Task UserJoined(Client client)
+    public void UserJoined(Client client)
     {
         Log.Information("User Joined - {ipAddress} as {username}[{email}]",
                        client.IpAddress, client.AuthenticatedUser?.Name ?? "Unknown",
@@ -36,7 +36,7 @@ public class GameService : IGameService
     /// <summary>
     /// Called once the client has selected a character to play.
     /// </summary>
-    public async Task CharacterJoined(Client client)
+    public void CharacterJoined(Client client)
     {
         var characterName = client.Character.Name;
 
@@ -53,10 +53,10 @@ public class GameService : IGameService
         client.SendLine($"Welcome back, {characterName}!");
 
         // Separate all of the intro stuff from World stuff.
-        await client.SendSeparator();
+        client.SendSeparator();
 
         // Play the character's current status to the client.
-        await client.Character.ShowStatus();
+        client.Character.ShowStatus();
 
 
     }
@@ -74,15 +74,13 @@ public class GameService : IGameService
         Clients.Remove(client);
     }
 
-    public async Task ClientAuthenticated(Client client)
+    public void ClientAuthenticated(Client client)
     {
         Log.Information("Client Authenticated - {ipAddress} as {username}[{email}]",
             client.IpAddress, client.AuthenticatedUser?.Name ?? "Unknown",
             client.AuthenticatedUser?.Email ?? "Unknown");
 
         Clients.Remove(client);
-        await UserJoined(client);
+        UserJoined(client);
     }
-
-
 }

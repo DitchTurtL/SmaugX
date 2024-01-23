@@ -7,20 +7,30 @@ internal class CharacterCreationCommandHandler : ICommandHandler
 {
     public void HandleCommand(ICommand command)
     {
-        var commandTask = command.Client.CharacterCreationState switch
+        switch (command.Client.CharacterCreationState)
         {
-            CharacterCreationState.None => HandleNewAndLoad(command),
-            CharacterCreationState.WaitingForName => HandleName(command),
-            CharacterCreationState.WaitingForRace => HandleRace(command),
-            CharacterCreationState.WaitingForClass => HandleClass(command),
-            CharacterCreationState.Loading => HandleLoading(command),
-            _ => HandleUnknown(command),
-        };
-        commandTask.Wait();
-
+            case CharacterCreationState.None:
+                HandleNewAndLoad(command);
+                break;
+            case CharacterCreationState.WaitingForName:
+                HandleName(command);
+                break;
+            case CharacterCreationState.WaitingForRace:
+                HandleRace(command);
+                break;
+            case CharacterCreationState.WaitingForClass:
+                HandleClass(command);
+                break;
+            case CharacterCreationState.Loading:
+                HandleLoading(command);
+                break;
+            default:
+                HandleUnknown(command);
+                break;
+        }
     }
 
-    private async Task HandleNewAndLoad(ICommand command)
+    private void HandleNewAndLoad(ICommand command)
     {
         switch (command.Name.ToUpper())
         {
@@ -33,7 +43,7 @@ internal class CharacterCreationCommandHandler : ICommandHandler
                 command.Client.CharacterCreationState = CharacterCreationState.Loading;
 
                 // Get characters
-                var characters = await command.Client.GetCharacters();
+                var characters = command.Client.GetCharacters();
                 var names = characters.Select(c => c.Name);
 
                 // If no characters, start new character creation
@@ -63,7 +73,7 @@ internal class CharacterCreationCommandHandler : ICommandHandler
     /// <summary>
     /// Handles the loading of a character.
     /// </summary>
-    private async Task HandleLoading(ICommand command)
+    private void HandleLoading(ICommand command)
     {
         // if nothing was supplied, prompt again.
         if (string.IsNullOrEmpty(command.Name))
@@ -74,7 +84,7 @@ internal class CharacterCreationCommandHandler : ICommandHandler
         }
 
         // Get selected character
-        var character = await command.Client.GetCharacterByName(command.Name);
+        var character = command.Client.GetCharacterByName(command.Name);
         // If no character found, prompt again.
         if (character == null)
         {
@@ -86,26 +96,26 @@ internal class CharacterCreationCommandHandler : ICommandHandler
 
         // Found character, load it
         command.Client.CharacterCreationState = CharacterCreationState.Loaded;
-        await command.Client.CharacterSelected(character);
+        command.Client.CharacterSelected(character);
         command.Handled = true;
     }
 
-    private async Task HandleUnknown(ICommand command)
+    private void HandleUnknown(ICommand command)
     {
         throw new NotImplementedException();
     }
 
-    private async Task HandleClass(ICommand command)
+    private void HandleClass(ICommand command)
     {
         throw new NotImplementedException();
     }
 
-    private async Task HandleRace(ICommand command)
+    private void HandleRace(ICommand command)
     {
         throw new NotImplementedException();
     }
 
-    private async Task HandleName(ICommand command)
+    private void HandleName(ICommand command)
     {
         throw new NotImplementedException();
     }
