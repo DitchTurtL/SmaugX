@@ -1,6 +1,6 @@
 ﻿namespace SmaugX.Core.Enums;
 
-internal enum Position
+public enum Position
 {
     Standing = 0,
     Floating = 1,

@@ -15,6 +15,8 @@ public class Client
 {
     private readonly IGameService gameService;
     private readonly ICommandService commandService;
+    private readonly IDatabaseService databaseService;
+    private readonly IAuthenticationService authenticationService;
 
     // Sockets
     private TcpClient Socket { get; set; }
@@ -40,11 +42,13 @@ public class Client
     /// </summary>
     public string IpAddress => (Socket?.Client?.RemoteEndPoint as IPEndPoint)?.Address.ToString() ?? "Unknown";
 
-    public Client(TcpClient socket, IGameService gameService, ICommandService commandService)
+    public Client(TcpClient socket, IGameService gameService, ICommandService commandService, IDatabaseService databaseService, IAuthenticationService authenticationService)
     {
         Socket = socket;
         this.gameService = gameService;
         this.commandService = commandService;
+        this.databaseService = databaseService;
+        this.authenticationService = authenticationService;
     }
 
     /// <summary>
@@ -91,7 +95,7 @@ public class Client
         // Send Welcome banner
         await SendBanner();
 
-        await AuthenticationService.StartAuthentication(this);
+        authenticationService.StartAuthentication(this);
     }
 
     /// <summary>
@@ -194,18 +198,18 @@ public class Client
         if (AuthenticatedUser == null)
             return new List<Character>();
 
-        return await DatabaseService.GetCharactersByUserId(AuthenticatedUser.Id);
+        return databaseService.GetCharactersByUserId(AuthenticatedUser.Id);
     }
 
     /// <summary>
-    /// Returns a character belonging to thus User with the matching name.
+    /// Returns a character belonging to this User with the matching name.
     /// </summary>
     internal async Task<Character?> GetCharacterByName(string name)
     {
         if (AuthenticatedUser == null)
             return null;
 
-        return await DatabaseService.GetCharacterByNameWithUserId(name, AuthenticatedUser!.Id);
+        return databaseService.GetCharacterByIdAndName(AuthenticatedUser!.Id, name);
     }
 
     internal async Task CharacterSelected(Character character)

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SmaugX.Core.Data.Characters;
 
-internal class Character
+public class Character
 {
     public int Id { get; set; }
     public int UserId { get; set; }
@@ -21,12 +21,7 @@ internal class Character
 
     #endregion
 
-    private Room? currentRoom = null;
-    private Room CurrentRoom
-    {
-        get => currentRoom ??= RoomService.GetRoomById(CurrentRoomId);
-        set => currentRoom = value;
-    }
+    private Room? CurrentRoom { get; set; }
 
     public Client? Client { get; set; } = null!;
 
@@ -35,7 +30,7 @@ internal class Character
     {
         var sb = new StringBuilder();
         sb.AppendLine($"You are {StringConstants.GetPosition(Position)}");
-        sb.AppendLine($" in {CurrentRoom.Name}.");
+        sb.AppendLine($" in {CurrentRoom?.Name ?? StringConstants.DEFAULT_CHARACTER_NAME}.");
         await Client!.SendLine(sb.ToString(), Helpers.MessageColor.Status);
 
     }

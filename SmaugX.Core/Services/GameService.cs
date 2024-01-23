@@ -6,9 +6,16 @@ namespace SmaugX.Core.Services;
 
 public class GameService : IGameService
 {
+    private readonly IRoomService roomService;
+
     private static List<Client> Clients = new();
     private static List<Client> AuthenticatedClients = new();
     private static List<Character> Characters = new();
+
+    public GameService(IRoomService roomService)
+    {
+        this.roomService = roomService;
+    }
 
     /// <summary>
     /// Called once the client has authenticated and is ready to 
@@ -40,7 +47,7 @@ public class GameService : IGameService
         Characters.Add(client.Character);
 
         // Notify the Room Service that the character has entered the game.
-        await RoomService.CharacterJoined(client.Character);
+        roomService.CharacterJoined(client.Character);
 
         // Send welcome message
         await client.SendLine($"Welcome back, {characterName}!");

@@ -4,24 +4,31 @@ using SmaugX.Core.Data.World.Rooms;
 
 namespace SmaugX.Core.Services;
 
-internal static class RoomService
+public class RoomService : IRoomService
 {
+    private readonly IDatabaseService databaseService;
+
     private static List<Room> RoomCache = new();
 
-    internal static async Task CharacterJoined(Character character)
+    public RoomService(IDatabaseService databaseService)
+    {
+        this.databaseService = databaseService;
+    }
+
+    public void CharacterJoined(Character character)
     {
 
 
     }
 
-    internal static Room GetRoomById(int id)
+    public Room GetRoomById(int id)
     {
         // get room from cache
         var room = RoomCache.FirstOrDefault(r => r.Id == id);
 
         // if not in cache, get from database
         if (room == null)
-            room = DatabaseService.GetRoomById(id);
+            room = databaseService.GetRoomById(id);
 
         // If not in database, log error and return void room
         if (room == null)
@@ -35,10 +42,5 @@ internal static class RoomService
         RoomCache.Add(room);
 
         return room;
-    }
-
-    internal static Room? GetRoomForCache(int currentRoomId)
-    {
-        throw new NotImplementedException();
     }
 }

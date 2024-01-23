@@ -2,7 +2,7 @@
 
 namespace SmaugX.Core.Data.World.Rooms;
 
-internal class Room
+public class Room
 {
     public int Id { get; set; }
 

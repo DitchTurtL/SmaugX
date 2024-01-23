@@ -8,9 +8,16 @@ using SmaugX.Core.Helpers;
 
 namespace SmaugX.Core.Services;
 
-internal static class DatabaseService
+public class DatabaseService : IDatabaseService
 {
-    internal static async Task<Character?> GetCharacterByNameWithUserId(string name, int id)
+    #region Characters
+
+    public Character? GetCharacterByIdAndName(int id, string name)
+    {
+        return Task.Run<Character?>(async () => await GetCharacterByIdAndNameAsync(id, name)).Result;
+    }
+
+    private async Task<Character?> GetCharacterByIdAndNameAsync(int id, string name)
     {
         using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
         connection.Open();
@@ -22,7 +29,12 @@ internal static class DatabaseService
         return await connection.QueryFirstOrDefaultAsync<Character>(query, param);
     }
 
-    internal static async Task<IEnumerable<Character>> GetCharactersByUserId(int id)
+    public List<Character> GetCharactersByUserId(int id)
+    {
+        return Task.Run<IEnumerable<Character>>(async () => await GetCharactersByUserIdAsync(id)).Result.ToList();
+    }
+
+    private async Task<IEnumerable<Character>> GetCharactersByUserIdAsync(int id)
     {
         using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
         connection.Open();
@@ -34,19 +46,16 @@ internal static class DatabaseService
         return await connection.QueryAsync<Character>(query, param);
     }
 
-    internal static Room? GetRoomById(int id)
+    #endregion
+
+    #region Users
+
+    public User? GetUserForAuth(string usernameOrEmail, string password)
     {
-        using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
-        connection.Open();
-
-        // Get room with matching id
-        var query = "SELECT * FROM rooms WHERE id = @id";
-        var param = new { id };
-
-        return connection.QueryFirstOrDefault<Room>(query, param);
+        return Task.Run<User?>(async () => await GetUserForAuthAsync(usernameOrEmail, password)).Result;
     }
 
-    internal static async Task<User?> GetUser(string usernameOrEmail, string password)
+    private async Task<User?> GetUserForAuthAsync(string usernameOrEmail, string password)
     {
         using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
         connection.Open();
@@ -65,4 +74,28 @@ internal static class DatabaseService
         }
         return null;
     }
+
+    #endregion
+
+    #region Rooms
+
+    public Room? GetRoomById(int id)
+    {
+        return Task.Run<Room?>(async () => await GetRoomByIdAsync(id)).Result;
+    }
+
+    private async Task<Room?> GetRoomByIdAsync(int id)
+    {
+        using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
+        connection.Open();
+
+        // Get room with matching id
+        var query = "SELECT * FROM rooms WHERE id = @id";
+        var param = new { id };
+
+        return await connection.QueryFirstOrDefaultAsync<Room>(query, param);
+    }
+
+    #endregion
+
 }

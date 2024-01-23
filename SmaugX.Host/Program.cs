@@ -30,7 +30,10 @@ using var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
         services.AddHostedService<TcpServerService>();
+        services.AddSingleton<IDatabaseService, DatabaseService>();
+        services.AddSingleton<IAuthenticationService, AuthenticationService>();
         services.AddSingleton<IGameService, GameService>();
+        services.AddSingleton<IRoomService, RoomService>();
         services.AddSingleton<ICommandService, CommandService>();
     })
     .Build();

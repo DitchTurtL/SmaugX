@@ -1,20 +1,29 @@
-﻿using SmaugX.Core.Constants;
+﻿using Serilog;
+using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Hosting;
 
 namespace SmaugX.Core.Services;
 
-internal static class AuthenticationService
+public class AuthenticationService : IAuthenticationService
 {
-    public static async Task<User?> GetUser(string usernameOrEmail, string password)
+    private readonly IDatabaseService databaseService;
+
+    public AuthenticationService(IDatabaseService databaseService)
     {
-        return await DatabaseService.GetUser(usernameOrEmail, password);
+        Log.Information("Initializing Authentication Service...");
+        this.databaseService = databaseService;
     }
 
-    internal static async Task StartAuthentication(Client client)
+    public User? GetUser(string usernameOrEmail, string password)
+    {
+        return databaseService.GetUserForAuth(usernameOrEmail, password);
+    }
+
+    public void StartAuthentication(Client client)
     {
         client.AuthenticationState = AuthenticationState.WaitingForEmail;
-        await client.SendSystemMessage(StringConstants.AUTHENTICATION_PROMPT_USERNAME);
+        client.SendSystemMessage(StringConstants.AUTHENTICATION_PROMPT_USERNAME);
     }
 
 }

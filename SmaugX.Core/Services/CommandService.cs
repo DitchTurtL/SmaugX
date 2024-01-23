@@ -7,21 +7,23 @@ namespace SmaugX.Core.Services;
 
 public class CommandService : ICommandService, ICommandHandler
 {
-    private readonly IGameService gameService = null!;
+    private readonly IGameService gameService;
+    private readonly IAuthenticationService authenticationService;
 
     private List<ICommandHandler> commandHandlers { get; }
 
     /// <summary>
     /// Initializes all command handlers with dependencies.
     /// </summary>
-    public CommandService(IGameService gameService)
+    public CommandService(IGameService gameService, IAuthenticationService authenticationService)
     {
         Log.Information("Initializing Command Handler...");
         this.gameService = gameService;
+        this.authenticationService = authenticationService;
 
         commandHandlers = new()
         {
-            new AuthenticationCommandHandler(gameService),
+            new AuthenticationCommandHandler(gameService, authenticationService),
             new CharacterCreationCommandHandler(),
         };   
     }
