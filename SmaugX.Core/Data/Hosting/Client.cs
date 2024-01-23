@@ -120,7 +120,7 @@ public class Client
     /// </summary>
     private async Task SendBanner()
     {
-        await SendLines(ContentService.Banner(), MessageColor.Banner);
+        await SendLines(ContentHelper.Banner(), MessageColor.Banner);
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public class Client
     /// </summary>
     public async Task SendMotd()
     {
-        await SendLines(ContentService.Motd(), MessageColor.Motd);
+        await SendLines(ContentHelper.Motd(), MessageColor.Motd);
     }
 
     #endregion
