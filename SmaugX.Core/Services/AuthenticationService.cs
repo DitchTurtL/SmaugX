@@ -1,6 +1,6 @@
 ﻿using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Authentication;
-using SmaugX.Core.Hosting;
+using SmaugX.Core.Data.Hosting;
 
 namespace SmaugX.Core.Services;
 

@@ -2,7 +2,6 @@
 using Serilog;
 using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Authentication;
-using SmaugX.Core.Hosting;
 using SmaugX.Core.Services;
 
 namespace SmaugX.Core.Commands;
@@ -12,14 +11,22 @@ namespace SmaugX.Core.Commands;
 /// </summary>
 internal class AuthenticationCommandHandler : ICommandHandler
 {
-    public Task HandleCommand(ICommand command)
+    private readonly IGameService gameService;
+
+    public AuthenticationCommandHandler(IGameService gameService)
     {
-        return command.Client.AuthenticationState switch
+        this.gameService = gameService;
+    }
+
+    public void HandleCommand(ICommand command)
+    {
+        var commandTask = command.Client.AuthenticationState switch
         {
             AuthenticationState.WaitingForEmail => HandleEmail(command),
             AuthenticationState.WaitingForPassword => HandlePassword(command),
             _ => Task.CompletedTask,
         };
+        commandTask.Wait();
     }
 
     private async Task HandleEmail(ICommand command)
@@ -74,7 +81,7 @@ internal class AuthenticationCommandHandler : ICommandHandler
         await command.Client.SendSystemMessage(StringConstants.AUTHENTICATION_SUCCESS);
 
         // Let the server know this client has authenticated.
-        await Server.ClientAuthenticated(command.Client);
+        await gameService.ClientAuthenticated(command.Client);
     }
 
 }

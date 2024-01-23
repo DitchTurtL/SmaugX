@@ -1,6 +1,6 @@
 ﻿namespace SmaugX.Core.Constants;
 
-internal static class FileConstants
+public static class FileConstants
 {
     // File logging
     public const string LOG_DIRECTORY = "Logs";

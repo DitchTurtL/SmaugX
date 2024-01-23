@@ -1,11 +1,12 @@
 ﻿using Serilog;
 using SmaugX.Core.Data.Characters;
-using SmaugX.Core.Hosting;
+using SmaugX.Core.Data.Hosting;
 
 namespace SmaugX.Core.Services;
 
-internal static class GameService
+public class GameService : IGameService
 {
+    private static List<Client> Clients = new();
     private static List<Client> AuthenticatedClients = new();
     private static List<Character> Characters = new();
 
@@ -13,7 +14,7 @@ internal static class GameService
     /// Called once the client has authenticated and is ready to 
     /// pick a character or create a new one.
     /// </summary>
-    internal static async Task UserJoined(Client client)
+    public async Task UserJoined(Client client)
     {
         Log.Information("User Joined - {ipAddress} as {username}[{email}]",
                        client.IpAddress, client.AuthenticatedUser?.Name ?? "Unknown",
@@ -28,7 +29,7 @@ internal static class GameService
     /// <summary>
     /// Called once the client has selected a character to play.
     /// </summary>
-    internal static async Task CharacterJoined(Client client)
+    public async Task CharacterJoined(Client client)
     {
         var characterName = client.Character.Name;
 
@@ -51,6 +52,29 @@ internal static class GameService
         await client.Character.ShowStatus();
 
 
+    }
+
+    public void ClientConnected(Client client)
+    {
+        Log.Information("Client connected - {ipAddress}", client.IpAddress);
+        Clients.Add(client);
+    }
+
+
+    public void ClientExited(Client client)
+    {
+        Log.Information("Client Exited - {ipAddress}", client.IpAddress);
+        Clients.Remove(client);
+    }
+
+    public async Task ClientAuthenticated(Client client)
+    {
+        Log.Information("Client Authenticated - {ipAddress} as {username}[{email}]",
+            client.IpAddress, client.AuthenticatedUser?.Name ?? "Unknown",
+            client.AuthenticatedUser?.Email ?? "Unknown");
+
+        Clients.Remove(client);
+        await UserJoined(client);
     }
 
 
