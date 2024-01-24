@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  smaugx-host:
+    image: smaugx-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"

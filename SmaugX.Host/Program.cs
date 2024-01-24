@@ -6,12 +6,13 @@
 ///   Main appliation entry point.
 ///
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using SmaugX.Core.Constants;
+using SmaugX.Core.Data.Hosting;
 using SmaugX.Core.Services;
-
 
 // Verify log directory exists
 var logPath = Path.Combine(Environment.CurrentDirectory, FileConstants.LOG_DIRECTORY);
@@ -25,10 +26,17 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File(logFile, rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
-// Configure services
+// Configure services   
 using var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
+        // Setup configuration
+        IConfiguration configuration = new ConfigurationBuilder()
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .Build();
+        services.Configure<SmaugXSettings>(configuration.GetSection("SmaugXSettings"));
+
         services.AddHostedService<TcpServerService>();
         services.AddSingleton<IDatabaseService, DatabaseService>();
         services.AddSingleton<IGameService, GameService>();

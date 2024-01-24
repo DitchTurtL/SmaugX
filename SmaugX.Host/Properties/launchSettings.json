@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SmaugX.Host": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

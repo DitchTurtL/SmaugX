@@ -1,8 +1,10 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
+using SmaugX.Core.Data.Hosting;
 using SmaugX.Core.Data.World.Rooms;
 using SmaugX.Core.Helpers;
 
@@ -10,6 +12,15 @@ namespace SmaugX.Core.Services;
 
 public class DatabaseService : IDatabaseService
 {
+    private readonly SmaugXSettings configuration;
+
+    public DatabaseService(IOptions<SmaugXSettings> configuration)
+    {
+        this.configuration = configuration.Value;
+    }
+
+    private string GetConnectionString() => configuration.ConnectionString;
+
     #region Characters
 
     public Character? GetCharacterByIdAndName(int id, string name)
@@ -19,7 +30,7 @@ public class DatabaseService : IDatabaseService
 
     private async Task<Character?> GetCharacterByIdAndNameAsync(int id, string name)
     {
-        using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
+        using var connection = new NpgsqlConnection(GetConnectionString());
         connection.Open();
 
         // Get character with matching name and user id
@@ -36,7 +47,7 @@ public class DatabaseService : IDatabaseService
 
     private async Task<IEnumerable<Character>> GetCharactersByUserIdAsync(int id)
     {
-        using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
+        using var connection = new NpgsqlConnection(GetConnectionString());
         connection.Open();
 
         // Get characters with matching user id
@@ -86,7 +97,7 @@ public class DatabaseService : IDatabaseService
 
     private async Task<Room?> GetRoomByIdAsync(int id)
     {
-        using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
+        using var connection = new NpgsqlConnection(GetConnectionString());
         connection.Open();
 
         // Get room with matching id
@@ -103,7 +114,7 @@ public class DatabaseService : IDatabaseService
 
     private async Task<List<Exit>> GetExitsByRoomIdAsync(int id)
     {
-        using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
+        using var connection = new NpgsqlConnection(GetConnectionString());
         connection.Open();
 
         // Get exits with matching room id
