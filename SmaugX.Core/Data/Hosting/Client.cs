@@ -17,7 +17,7 @@ public class Client
     private readonly IGameService gameService;
     private readonly ICommandService commandService;
     private readonly IDatabaseService databaseService;
-
+    private readonly TcpServerService serverService;
     // Sockets
     private TcpClient Socket { get; set; }
     private NetworkStream? Stream { get; set; }
@@ -36,12 +36,13 @@ public class Client
     /// </summary>
     public string IpAddress => (Socket?.Client?.RemoteEndPoint as IPEndPoint)?.Address.ToString() ?? "Unknown";
 
-    public Client(TcpClient socket, IGameService gameService, ICommandService commandService, IDatabaseService databaseService)
+    public Client(TcpClient socket, TcpServerService serverService, IGameService gameService, ICommandService commandService, IDatabaseService databaseService)
     {
         Socket = socket;
         this.gameService = gameService;
         this.commandService = commandService;
         this.databaseService = databaseService;
+        this.serverService = serverService;
     }
 
     /// <summary>
@@ -74,7 +75,7 @@ public class Client
         finally
         {
             Socket.Close();
-            gameService.ClientExited(this);
+            serverService.ClientExited(this);
         }
     }
 

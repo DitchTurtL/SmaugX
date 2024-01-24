@@ -1,6 +1,7 @@
 ﻿using Serilog;
 using SmaugX.Core.Commands;
 using SmaugX.Core.Commands.CommandHandlers;
+using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
 
@@ -37,46 +38,58 @@ public class CommandService : ICommandService, ICommandHandler
     /// <param name="command"></param>
     public void HandleCommand(ICommand command)
     {
-        // We can have multiple command handlers
-        // for different modules of the game.
-        foreach (var handler in commandHandlers)
+        try
         {
-            // Don't handle any commands if the client is not authenticated.
-            if (command.Client.AuthenticationState != AuthenticationState.Authenticated)
+            // We can have multiple command handlers
+            // for different modules of the game.
+            foreach (var handler in commandHandlers)
             {
-                // Except for authentication commands.
-                if (handler is AuthenticationCommandHandler)
+                // Don't handle any commands if the client is not authenticated.
+                if (command.Client.AuthenticationState != AuthenticationState.Authenticated)
+                {
+                    // Except for authentication commands.
+                    if (handler is AuthenticationCommandHandler)
+                        handler.HandleCommand(command);
+
+                    // If the authentication handler handled the command, break out of the loop.
+                    if (command.Handled)
+                        break;
+
+                    continue;
+                }
+
+                // Require character creation or population before being able to interact with the world.
+                if (command.Client.CharacterCreationState != CharacterCreationState.Loaded)
+                {
+                    // Only allow character creation commands for now.
+                    if (handler is CharacterCreationCommandHandler)
+                        handler.HandleCommand(command);
+
+                    if (command.Handled)
+                        break;
+
+                    continue;
+                }
+
+                // If the command hasn't already been handled, handle it.
+                if (!command.Handled)
                     handler.HandleCommand(command);
 
-                // If the authentication handler handled the command, break out of the loop.
+                // If the command has been handled, break out of the loop.
                 if (command.Handled)
                     break;
-
-                continue;
             }
 
-            // Require character creation or population before being able to interact with the world.
-            if (command.Client.CharacterCreationState != CharacterCreationState.Loaded)
-            {
-                // Only allow character creation commands for now.
-                if (handler is CharacterCreationCommandHandler)
-                    handler.HandleCommand(command);
-
-                continue;
-            }
-
-            // If the command hasn't already been handled, handle it.
+            // If the command hasn't been handled, handle it ourselves.
             if (!command.Handled)
-                handler.HandleCommand(command);
-
-            // If the command has been handled, break out of the loop.
-            if (command.Handled)
-                break;
+                HandleBaseCommand(command);
+        } 
+                catch (Exception ex)
+        {
+            Log.Error(ex, "Error handling command - {ipAddress}: {command} parameters: {params}",
+                               command.Client.IpAddress, command.Name, string.Join(" ", command.Parameters));
         }
-
-        // If the command hasn't been handled, handle it ourselves.
-        if (!command.Handled)
-            HandleBaseCommand(command);
+        
     }
 
     /// <summary>
@@ -106,6 +119,8 @@ public class CommandService : ICommandService, ICommandHandler
     {
         Log.Warning("Unknown command - {ipAddress}: {command} parameters: {params}",
             command.Client.IpAddress, command.Name, string.Join(" ", command.Parameters));
+
+        command.Client.SendSystemMessage(StringConstants.UNKNOWN_COMMAND);
 
     }
 }

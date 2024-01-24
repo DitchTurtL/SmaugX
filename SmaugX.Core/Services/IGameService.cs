@@ -6,7 +6,5 @@ public interface IGameService
 {
     void UserJoined(Client client);
     void CharacterJoined(Client client);
-    void ClientConnected(Client client);
-    void ClientExited(Client client);
     void ClientAuthenticated(Client client);
 }

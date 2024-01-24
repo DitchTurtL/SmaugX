@@ -1,4 +1,5 @@
-﻿using SmaugX.Core.Constants;
+﻿using Serilog;
+using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Characters;
 
 namespace SmaugX.Core.Commands.CommandHandlers;
@@ -23,9 +24,6 @@ internal class CharacterCreationCommandHandler : ICommandHandler
                 break;
             case CharacterCreationState.Loading:
                 HandleLoading(command);
-                break;
-            default:
-                HandleUnknown(command);
                 break;
         }
     }
@@ -98,11 +96,6 @@ internal class CharacterCreationCommandHandler : ICommandHandler
         command.Client.CharacterCreationState = CharacterCreationState.Loaded;
         command.Client.CharacterSelected(character);
         command.Handled = true;
-    }
-
-    private void HandleUnknown(ICommand command)
-    {
-        throw new NotImplementedException();
     }
 
     private void HandleClass(ICommand command)

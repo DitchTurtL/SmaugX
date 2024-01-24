@@ -23,6 +23,8 @@ internal class StringConstants
     public const string DEFAULT_ROOM_NAME = "an unknown location";
     public const string DEFAULT_CHARACTER_NAME = "Unknown";
 
+    public const string UNKNOWN_COMMAND = "You don't know how to do that.";
+
     internal static string GetPosition(Position position)
     {
         return position switch

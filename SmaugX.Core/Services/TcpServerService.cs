@@ -12,6 +12,8 @@ public class TcpServerService : IHostedService
     private readonly ICommandService commandService;
     private readonly IDatabaseService databaseService;
 
+    private static List<Client> Clients = new();
+
     public TcpServerService(IGameService gameService, ICommandService commandService, IDatabaseService databaseService)
     {
         this.gameService = gameService;
@@ -30,9 +32,9 @@ public class TcpServerService : IHostedService
             while (true)
             {
                 var socket = await tcpListener.AcceptTcpClientAsync();
-                var client = new Client(socket, gameService, commandService, databaseService);
+                var client = new Client(socket, this, gameService, commandService, databaseService);
                 _ = client.HandleClientAsync();
-                gameService.ClientConnected(client);
+                ClientConnected(client);
             }
         }
         catch (Exception ex)
@@ -45,11 +47,21 @@ public class TcpServerService : IHostedService
         }
     }
 
+    private void ClientConnected(Client client)
+    {
+        Log.Information("Client connected - {ipAddress}", client.IpAddress);
+        Clients.Add(client);
+    }
+
+    public void ClientExited(Client client)
+    {
+        Log.Information("Client Exited - {ipAddress}", client.IpAddress);
+        Clients.Remove(client);
+    }
+
     public Task StopAsync(CancellationToken cancellationToken)
     {
         Log.Information("Server exiting...");
         return Task.CompletedTask;
     }
-
-
 }

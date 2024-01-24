@@ -8,7 +8,6 @@ public class GameService : IGameService
 {
     private readonly IRoomService roomService;
 
-    private static List<Client> Clients = new();
     private static List<Client> AuthenticatedClients = new();
     private static List<Character> Characters = new();
 
@@ -26,6 +25,7 @@ public class GameService : IGameService
         Log.Information("User Joined - {ipAddress} as {username}[{email}]",
                        client.IpAddress, client.AuthenticatedUser?.Name ?? "Unknown",
                                   client.AuthenticatedUser?.Email ?? "Unknown");
+
         AuthenticatedClients.Add(client);
 
         client.SendMotd();
@@ -64,18 +64,7 @@ public class GameService : IGameService
 
     }
 
-    public void ClientConnected(Client client)
-    {
-        Log.Information("Client connected - {ipAddress}", client.IpAddress);
-        Clients.Add(client);
-    }
 
-
-    public void ClientExited(Client client)
-    {
-        Log.Information("Client Exited - {ipAddress}", client.IpAddress);
-        Clients.Remove(client);
-    }
 
     public void ClientAuthenticated(Client client)
     {
@@ -83,7 +72,6 @@ public class GameService : IGameService
             client.IpAddress, client.AuthenticatedUser?.Name ?? "Unknown",
             client.AuthenticatedUser?.Email ?? "Unknown");
 
-        Clients.Remove(client);
         UserJoined(client);
     }
 }
