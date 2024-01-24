@@ -25,6 +25,9 @@ public class RoomService : IRoomService
 
     }
 
+    /// <summary>
+    /// Tries to move the character in the direction specified.
+    /// </summary>
     public void MoveCharacter(Character character, Direction direction)
     {
         // Get the current room.
@@ -61,6 +64,9 @@ public class RoomService : IRoomService
         SendCharacterStatus(character);
     }
 
+    /// <summary>
+    /// Returns a reference to the room with the specified id.
+    /// </summary>
     public Room GetRoomById(int id)
     {
         // get room from cache
@@ -84,6 +90,11 @@ public class RoomService : IRoomService
         return room;
     }
 
+    /// <summary>
+    /// Sends the character's status to the client.
+    /// "You are standing in the middle of a forest."
+    /// "You are floating in The Void."
+    /// </summary>
     public void SendCharacterStatus(Character character)
     {
         var currentRoom = character.CurrentRoom ??= GetRoomById(character.CurrentRoomId);
@@ -95,6 +106,9 @@ public class RoomService : IRoomService
 
     }
 
+    /// <summary>
+    /// Returns a list of exits for the specified room id.
+    /// </summary>
     public List<Exit> GetExitsByRoomId(int id)
     {
         var room = GetRoomById(id);

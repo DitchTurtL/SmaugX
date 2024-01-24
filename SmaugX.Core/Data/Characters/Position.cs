@@ -4,7 +4,4 @@ public enum Position
 {
     Standing = 0,
     Floating = 1,
-
 }
-
-

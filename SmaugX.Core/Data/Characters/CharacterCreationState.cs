@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SmaugX.Core.Data.Characters;
+﻿namespace SmaugX.Core.Data.Characters;
 
 internal enum CharacterCreationState
 {
@@ -14,5 +8,4 @@ internal enum CharacterCreationState
     WaitingForClass = 30,
     Loading = 95,
     Loaded = 100,
-
 }

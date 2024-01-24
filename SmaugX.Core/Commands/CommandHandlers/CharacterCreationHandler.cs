@@ -1,10 +1,18 @@
 ﻿using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Characters;
+using SmaugX.Core.Services;
 
 namespace SmaugX.Core.Commands.CommandHandlers;
 
 internal class CharacterCreationHandler : ICommandHandler
 {
+    private readonly IDatabaseService databaseService;
+
+    public CharacterCreationHandler(IDatabaseService databaseService)
+    {
+        this.databaseService = databaseService;
+    }
+
     public void HandleCommand(ICommand command)
     {
         switch (command.Client.CharacterCreationState)
@@ -40,7 +48,7 @@ internal class CharacterCreationHandler : ICommandHandler
                 command.Client.CharacterCreationState = CharacterCreationState.Loading;
 
                 // Get characters
-                var characters = command.Client.GetCharacters();
+                var characters = databaseService.GetCharactersByUserId(command.Client.AuthenticatedUser!.Id);
                 var names = characters.Select(c => c.Name);
 
                 // If no characters, start new character creation
@@ -81,7 +89,7 @@ internal class CharacterCreationHandler : ICommandHandler
         }
 
         // Get selected character
-        var character = command.Client.GetCharacterByName(command.Name);
+        var character = databaseService.GetCharacterByIdAndName(command.Client.AuthenticatedUser!.Id, command.Name);
         // If no character found, prompt again.
         if (character == null)
         {
@@ -111,6 +119,4 @@ internal class CharacterCreationHandler : ICommandHandler
     {
         throw new NotImplementedException();
     }
-
-
 }

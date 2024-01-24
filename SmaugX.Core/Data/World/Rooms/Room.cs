@@ -19,5 +19,4 @@ public class Room
 
     [NotMapped]
     public List<Exit?> Exits { get; set; } = null!;
-
 }

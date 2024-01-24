@@ -63,8 +63,6 @@ public class GameService : IGameService
 
     }
 
-
-
     public void ClientAuthenticated(Client client)
     {
         Log.Information("Client Authenticated - {ipAddress} as {username}[{email}]",

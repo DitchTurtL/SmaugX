@@ -5,6 +5,9 @@ namespace SmaugX.Core.Services;
 
 public interface IRoomService
 {
+    /// <summary>
+    /// Called when a character joins a room.
+    /// </summary>
     void CharacterJoined(Character character);
 
     Room GetRoomById(int id);

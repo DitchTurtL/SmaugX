@@ -30,7 +30,4 @@ internal static class ContentHelper
 
         return motd;
     }
-
-
 }
-

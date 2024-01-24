@@ -26,6 +26,9 @@ internal class StringConstants
     public const string UNKNOWN_COMMAND = "You don't know how to do that.";
     public const string BAD_MOVE_DIRECTION = "You can't go that way.";
 
+    /// <summary>
+    /// Returns the string representation of the given position.
+    /// </summary>
     internal static string GetPosition(Position position)
     {
         return position switch
@@ -36,6 +39,9 @@ internal class StringConstants
         };
     }
 
+    /// <summary>
+    /// Returns the string representation of the given message color.
+    /// </summary>
     internal static object GetSystemColor(MessageColor messageColor)
     {
         return messageColor switch

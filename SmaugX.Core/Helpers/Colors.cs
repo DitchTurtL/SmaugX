@@ -1,4 +1,4 @@
-﻿using SmaugX.Core.Constants;
+﻿    using SmaugX.Core.Constants;
 using System.Text;
 
 namespace SmaugX.Core.Helpers;

@@ -1,6 +1,4 @@
-﻿using Npgsql;
-using SmaugX.Core.Constants;
-using SmaugX.Core.Data.Authentication;
+﻿using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
 using SmaugX.Core.Data.World.Rooms;
 

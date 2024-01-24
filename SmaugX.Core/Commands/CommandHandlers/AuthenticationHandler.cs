@@ -86,5 +86,4 @@ internal class AuthenticationHandler : ICommandHandler
         // Let the server know this client has authenticated.
         gameService.ClientAuthenticated(command.Client);
     }
-
 }

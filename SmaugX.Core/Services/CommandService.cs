@@ -28,7 +28,7 @@ public class CommandService : ICommandService, ICommandHandler
         commandHandlers = new()
         {
             new AuthenticationHandler(gameService, databaseService),
-            new CharacterCreationHandler(),
+            new CharacterCreationHandler(databaseService),
             new MovementHandler(roomService),
         };   
     }
@@ -38,7 +38,6 @@ public class CommandService : ICommandService, ICommandHandler
     /// It is responsible for handing the command off to other handlers.
     /// Then handling anything that has not been handled, itself.
     /// </summary>
-    /// <param name="command"></param>
     public void HandleCommand(ICommand command)
     {
         try

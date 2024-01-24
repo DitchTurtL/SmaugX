@@ -14,16 +14,22 @@ namespace SmaugX.Core.Data.Hosting;
 
 public class Client
 {
+    #region Service References
     private readonly IGameService gameService;
     private readonly ICommandService commandService;
     private readonly IDatabaseService databaseService;
     private readonly TcpServerService serverService;
+    #endregion
+
+    // Send Queue to send messages to the client.
+    private readonly Channel<string> sendQueue = Channel.CreateUnbounded<string>();
+
     // Sockets
     private TcpClient Socket { get; set; }
     private NetworkStream? Stream { get; set; }
 
     // Authentication
-    public string AuthenticatedEmailOrUsername { get; set; }
+    public string AuthenticatedEmailOrUsername { get; set; } = string.Empty;
     internal User? AuthenticatedUser { get; set; } = null;
     internal AuthenticationState AuthenticationState { get; set; } = AuthenticationState.NotAuthenticated;
 
@@ -36,6 +42,9 @@ public class Client
     /// </summary>
     public string IpAddress => (Socket?.Client?.RemoteEndPoint as IPEndPoint)?.Address.ToString() ?? "Unknown";
 
+    /// <summary>
+    /// Initializer
+    /// </summary>
     public Client(TcpClient socket, TcpServerService serverService, IGameService gameService, ICommandService commandService, IDatabaseService databaseService)
     {
         Socket = socket;
@@ -50,7 +59,6 @@ public class Client
     /// </summary>
     public async Task HandleClientAsync()
     {
-
         try
         {
             Stream = Socket.GetStream();
@@ -79,7 +87,7 @@ public class Client
         }
     }
 
-    #region Events and Triggers
+    #region Events
 
     /// <summary>
     /// Called when the client first connects.
@@ -106,11 +114,34 @@ public class Client
         commandService.HandleCommand(command);
     }
 
+    /// <summary>
+    /// Called when the client has selected a character.
+    /// </summary>
+    /// <param name="character"></param>
+    internal void CharacterSelected(Character character)
+    {
+        character.Client = this;
+        Character = character;
+
+        // Notify the game service that the character has joined.
+        gameService.CharacterJoined(this.Character);
+    }
+
+    #endregion
+
+    #region Triggers
+
+    /// <summary>
+    /// Triggers the Character Creation process
+    /// </summary>
     internal void StartCharacterCreation(Client client)
     {
         SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_START);
     }
 
+    /// <summary>
+    /// Triggers the Authentication process
+    /// </summary>
     internal void StartAuthentication(Client client)
     {
         AuthenticationState = AuthenticationState.WaitingForEmail;
@@ -119,7 +150,7 @@ public class Client
 
     #endregion
 
-    #region Send Content to Client Helpers
+    #region Content Helpers
 
     /// <summary>
     /// Sends the welcome banner to the client.
@@ -139,8 +170,16 @@ public class Client
 
     #endregion
 
-    #region Send Data to Socket Helpers
-    
+    #region Send Message Helpers
+
+    /// <summary>
+    /// Sends a line separator to the client.
+    /// </summary>
+    internal void SendSeparator()
+    {
+        SendLine(StringConstants.SEPARATOR);
+    }
+
     /// <summary>
     /// Sends a message to the client with default SystemMessage color.
     /// </summary>
@@ -177,8 +216,6 @@ public class Client
         EnqueueMessage(text, messageColor);
     }
 
-    // Send Queue / Channel to send messages to the client.
-    private readonly Channel<string> sendQueue = Channel.CreateUnbounded<string>();
     /// <summary>
     /// Runs in background and consumes messages from the send queue.
     /// </summary>
@@ -189,17 +226,22 @@ public class Client
         // Asynchronously iterate over the messages in the channel and send them
         await foreach (string message in reader.ReadAllAsync())
         {
-            await SendText(message);
+            SendText(message);
         }
-
     }
 
+    /// <summary>
+    /// Enqueues a message to be sent to the client.
+    /// </summary>
     private void EnqueueMessage(string message, MessageColor messageColor = MessageColor.None)
     {
         sendQueue.Writer.TryWrite(message);
     }
 
-    private async Task SendText(string text, MessageColor messageColor = MessageColor.None)
+    /// <summary>
+    /// Receives a string from the Message Queue Consumer and converts it to binary data to be sent to the client.
+    /// </summary>
+    private void SendText(string text, MessageColor messageColor = MessageColor.None)
     {
         Log.Debug("Sending data - {ipAddress}: {line}", IpAddress, text);
 
@@ -223,47 +265,5 @@ public class Client
         await Stream!.WriteAsync(data, 0, data.Length);
     }
 
-    
-
-
-
-    /// <summary>
-    /// Returns all characters belonging to this user.
-    /// </summary>
-    internal List<Character> GetCharacters()
-    {
-        if (AuthenticatedUser == null)
-            return new List<Character>();
-
-        return databaseService.GetCharactersByUserId(AuthenticatedUser.Id);
-    }
-
-    /// <summary>
-    /// Returns a character belonging to this User with the matching name.
-    /// </summary>
-    internal Character? GetCharacterByName(string name)
-    {
-        if (AuthenticatedUser == null)
-            return null;
-
-        return databaseService.GetCharacterByIdAndName(AuthenticatedUser!.Id, name);
-    }
-
-    internal void CharacterSelected(Character character)
-    {
-        character.Client = this;
-        Character = character;
-
-        // Notify the game service that the character has joined.
-        gameService.CharacterJoined(this.Character);
-    }
-
-    internal void SendSeparator()
-    {
-        SendLine(StringConstants.SEPARATOR);
-    }
-
     #endregion
-
-
 }
