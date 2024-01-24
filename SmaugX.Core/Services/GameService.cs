@@ -36,31 +36,30 @@ public class GameService : IGameService
     /// <summary>
     /// Called once the client has selected a character to play.
     /// </summary>
-    public void CharacterJoined(Client client)
+    public void CharacterJoined(Character character)
     {
-        if (client.Character == null)
+        if (character == null)
             Log.Error("Character is null, what broke?");
 
-        var characterName = client.Character.Name;
+        var characterName = character!.Name;
 
         Log.Information("Character Joined - {ipAddress}[{username}] as {characterName}",
-            client.IpAddress, client.AuthenticatedUser!.Name, characterName);
+            character.Client!.IpAddress, character.Client!.AuthenticatedUser!.Name, characterName);
 
         // Add character to list of characters in the game.
-        Characters.Add(client.Character);
+        Characters.Add(character);
 
         // Notify the Room Service that the character has entered the game.
-        roomService.CharacterJoined(client.Character);
+        roomService.CharacterJoined(character);
 
         // Send welcome message
-        client.SendLine($"Welcome back, {characterName}!");
+        character.Client!.SendLine($"Welcome back, {characterName}!");
 
         // Separate all of the intro stuff from World stuff.
-        client.SendSeparator();
+        character.Client!.SendSeparator();
 
         // Play the character's current status to the client.
-        client.Character.ShowStatus();
-
+        roomService.SendCharacterStatus(character);
 
     }
 

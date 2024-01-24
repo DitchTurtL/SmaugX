@@ -8,12 +8,12 @@ namespace SmaugX.Core.Commands.CommandHandlers;
 /// <summary>
 /// Handles all authentication commands.
 /// </summary>
-internal class AuthenticationCommandHandler : ICommandHandler
+internal class AuthenticationHandler : ICommandHandler
 {
     private readonly IGameService gameService;
     private readonly IDatabaseService databaseService;
 
-    public AuthenticationCommandHandler(IGameService gameService, IDatabaseService databaseService)
+    public AuthenticationHandler(IGameService gameService, IDatabaseService databaseService)
     {
         this.gameService = gameService;
         this.databaseService = databaseService;

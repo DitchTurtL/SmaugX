@@ -3,16 +3,17 @@
 /// <summary>
 /// Directions used for movement.
 /// </summary>
-internal enum Direction
+public enum Direction
 {
-    North = 0,
-    East = 1,
-    South = 2,
-    West = 3,
-    Up = 4,
-    Down = 5,
-    Northeast = 6,
-    Northwest = 7,
-    Southeast = 8,
-    Southwest = 9,
+    None = 0,
+    North = 1,
+    East = 2,
+    South = 3,
+    West = 4,
+    Up = 5,
+    Down = 6,
+    NorthEast = 7,
+    NorthWest = 8,
+    SouthEast = 9,
+    SouthWest = 10,
 }

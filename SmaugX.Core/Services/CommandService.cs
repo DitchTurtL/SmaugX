@@ -11,22 +11,25 @@ public class CommandService : ICommandService, ICommandHandler
 {
     private readonly IGameService gameService;
     private readonly IDatabaseService databaseService;
+    private readonly IRoomService roomService;
 
     private List<ICommandHandler> commandHandlers { get; }
 
     /// <summary>
     /// Initializes all command handlers with dependencies.
     /// </summary>
-    public CommandService(IGameService gameService, IDatabaseService databaseService)
+    public CommandService(IGameService gameService, IDatabaseService databaseService, IRoomService roomService)
     {
         Log.Information("Initializing Command Handler...");
         this.gameService = gameService;
         this.databaseService = databaseService;
+        this.roomService = roomService;
 
         commandHandlers = new()
         {
-            new AuthenticationCommandHandler(gameService, databaseService),
-            new CharacterCreationCommandHandler(),
+            new AuthenticationHandler(gameService, databaseService),
+            new CharacterCreationHandler(),
+            new MovementHandler(roomService),
         };   
     }
 
@@ -48,7 +51,7 @@ public class CommandService : ICommandService, ICommandHandler
                 if (command.Client.AuthenticationState != AuthenticationState.Authenticated)
                 {
                     // Except for authentication commands.
-                    if (handler is AuthenticationCommandHandler)
+                    if (handler is AuthenticationHandler)
                         handler.HandleCommand(command);
 
                     // If the authentication handler handled the command, break out of the loop.
@@ -62,7 +65,7 @@ public class CommandService : ICommandService, ICommandHandler
                 if (command.Client.CharacterCreationState != CharacterCreationState.Loaded)
                 {
                     // Only allow character creation commands for now.
-                    if (handler is CharacterCreationCommandHandler)
+                    if (handler is CharacterCreationHandler)
                         handler.HandleCommand(command);
 
                     if (command.Handled)

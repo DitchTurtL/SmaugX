@@ -1,6 +1,6 @@
 ﻿namespace SmaugX.Core.Data.World.Rooms;
 
-internal class Exit
+public class Exit
 {
     public int Id { get; set; }
     public Direction Direction { get; set; }

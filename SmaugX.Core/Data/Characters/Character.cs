@@ -2,7 +2,7 @@
 using SmaugX.Core.Data.Hosting;
 using SmaugX.Core.Data.World.Rooms;
 using SmaugX.Core.Enums;
-using SmaugX.Core.Services;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace SmaugX.Core.Data.Characters;
@@ -21,17 +21,10 @@ public class Character
 
     #endregion
 
-    private Room? CurrentRoom { get; set; }
+    [NotMapped]
+    public Room? CurrentRoom { get; set; } = null!;
 
+    [NotMapped]
     public Client? Client { get; set; } = null!;
 
-
-    internal void ShowStatus()
-    {
-        var sb = new StringBuilder();
-        sb.AppendLine($"You are {StringConstants.GetPosition(Position)}");
-        sb.AppendLine($" in {CurrentRoom?.Name ?? StringConstants.DEFAULT_CHARACTER_NAME}.");
-        Client!.SendLine(sb.ToString(), Helpers.MessageColor.Status);
-
-    }
 }

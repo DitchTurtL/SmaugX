@@ -1,4 +1,5 @@
 ﻿using SmaugX.Core.Constants;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmaugX.Core.Data.World.Rooms;
 
@@ -16,18 +17,7 @@ public class Room
     public string ShortDescription { get; set; } = string.Empty;
     public string LongDescription { get; set; } = string.Empty;
 
-    /*
-        MAGENTA(*You moved North*)
-        
-        WHITE(*
-        - Room Name
-        
-          This is the room description that is shown 
-        when the player enters the room. It can be
-        multiple lines long and will break at the
-        correct screen width.
+    [NotMapped]
+    public List<Exit?> Exits { get; set; } = null!;
 
-        CYAN(*Exits: North, South, East, West*)
-
-    */
 }

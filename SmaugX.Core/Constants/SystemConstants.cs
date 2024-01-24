@@ -15,7 +15,8 @@ internal class SystemConstants
     private const string DATABASE_USERNAME = "smaugx";
     private const string DATABASE_PASSWORD = "smaugx";
     public static readonly string CONNECTION_STRING = $"Host={DATABASE_HOST};Port={DATABASE_PORT};Database={DATABASE_NAME};Username={DATABASE_USERNAME};Password={DATABASE_PASSWORD}";
-    
 
+    // Defaults
+    public const int DEFAULT_STARTING_ROOM_ID = 1;
 
 }

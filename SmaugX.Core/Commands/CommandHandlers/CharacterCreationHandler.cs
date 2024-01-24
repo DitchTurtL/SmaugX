@@ -1,10 +1,9 @@
-﻿using Serilog;
-using SmaugX.Core.Constants;
+﻿using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Characters;
 
 namespace SmaugX.Core.Commands.CommandHandlers;
 
-internal class CharacterCreationCommandHandler : ICommandHandler
+internal class CharacterCreationHandler : ICommandHandler
 {
     public void HandleCommand(ICommand command)
     {

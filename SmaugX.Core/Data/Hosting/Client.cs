@@ -255,7 +255,7 @@ public class Client
         Character = character;
 
         // Notify the game service that the character has joined.
-        gameService.CharacterJoined(this);
+        gameService.CharacterJoined(this.Character);
     }
 
     internal void SendSeparator()

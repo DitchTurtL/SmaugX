@@ -96,6 +96,23 @@ public class DatabaseService : IDatabaseService
         return await connection.QueryFirstOrDefaultAsync<Room>(query, param);
     }
 
+    public List<Exit> GetExitsByRoomId(int id)
+    {
+        return Task.Run<IEnumerable<Exit>>(async () => await GetExitsByRoomIdAsync(id)).Result.ToList();
+    }
+
+    private async Task<List<Exit>> GetExitsByRoomIdAsync(int id)
+    {
+        using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
+        connection.Open();
+
+        // Get exits with matching room id
+        var query = "SELECT * FROM exits WHERE room_id = @id";
+        var param = new { id };
+
+        return (await connection.QueryAsync<Exit>(query, param)).ToList();
+    }
+
     #endregion
 
 }

@@ -24,6 +24,7 @@ internal class StringConstants
     public const string DEFAULT_CHARACTER_NAME = "Unknown";
 
     public const string UNKNOWN_COMMAND = "You don't know how to do that.";
+    public const string BAD_MOVE_DIRECTION = "You can't go that way.";
 
     internal static string GetPosition(Position position)
     {
