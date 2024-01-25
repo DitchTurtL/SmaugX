@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS public.exits
     short_description character varying COLLATE pg_catalog."default",
     long_description character varying COLLATE pg_catalog."default",
     direction integer NOT NULL,
+    one_way boolean NOT NULL DEFAULT false,
     CONSTRAINT exits_pkey PRIMARY KEY (id),
     CONSTRAINT dest_room_id_fk FOREIGN KEY (destination_room_id)
         REFERENCES public.rooms (id) MATCH SIMPLE

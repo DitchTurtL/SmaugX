@@ -7,4 +7,9 @@ internal class Command : AbstractBaseCommand
     public Command(Client client, string commandText) : base(client, commandText)
     {
     }
+
+    public override object Clone()
+    {
+        throw new NotImplementedException();
+    }
 }

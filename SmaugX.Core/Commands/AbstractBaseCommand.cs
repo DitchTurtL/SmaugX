@@ -26,10 +26,17 @@ internal abstract class AbstractBaseCommand : ICommand
         Client = client;
     }
 
-    public virtual void Run()
+    public virtual async Task Run()
     {
         if (Handled) return;
         Log.Warning($"Command {Name} was not handled.");
         Handled = true;
+        await Task.CompletedTask;
     }
+
+    public virtual string[] GetHelp(params string[] parameters)
+    {
+        return new[] { "No help available for this command." };
+    }
+    public abstract object Clone();
 }

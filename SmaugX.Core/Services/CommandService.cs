@@ -1,6 +1,7 @@
 ﻿using Serilog;
 using SmaugX.Core.Commands;
 using SmaugX.Core.Commands.CommandHandlers;
+using SmaugX.Core.Commands.Commands;
 using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
@@ -10,6 +11,7 @@ namespace SmaugX.Core.Services;
 public class CommandService : ICommandService, ICommandHandler
 {
     private List<ICommandHandler> commandHandlers { get; } = new();
+    private List<ICommand> commands { get; } = new();
 
     /// <summary>
     /// Initializes all command handlers with dependencies.
@@ -25,7 +27,13 @@ public class CommandService : ICommandService, ICommandHandler
             new CharacterCreationHandler(databaseService),
             new MovementHandler(roomService),
             new BuildHandler(roomService),
-        };   
+        };
+
+        // Initialize commands
+        commands = new()
+        {
+            new Build(),
+        };
     }
 
     /// <summary>
@@ -77,6 +85,10 @@ public class CommandService : ICommandService, ICommandHandler
                     break;
             }
 
+            // Try to handle the command as a modular command
+            if (!command.Handled)
+                HandleModularCommand(command);
+
             // If the command hasn't been handled, handle it ourselves.
             if (!command.Handled)
                 HandleBaseCommand(command);
@@ -87,6 +99,39 @@ public class CommandService : ICommandService, ICommandHandler
                                command.Client.IpAddress, command.Name, string.Join(" ", command.Parameters));
         }
         
+    }
+
+    private void HandleModularCommand(ICommand command)
+    {
+        // Find the command template to clone.
+        var cmd = commands.FirstOrDefault(x => x.Name.Equals(command.Name, StringComparison.OrdinalIgnoreCase) ||
+        x.Name.Equals(command.Name + "Command"));
+
+        if (cmd == null)
+            return;
+        
+        var args = command.Parameters.ToList().Skip(1);
+
+        // If there are no parameters, or the first parameter is HELP, show the help for the command.
+        if (!args.Any() || args.First().Equals("HELP", StringComparison.OrdinalIgnoreCase))
+        {
+            var helpLines = cmd.GetHelp(args.ToArray());
+            command.Client.SendLines(helpLines);
+            command.Handled = true;
+            return;
+        }
+
+        // If we got more than one parameter and it wasn't a help command,
+        // we need to clone the command and run it in context for this user.
+
+        // Clone the command template.
+        var commandToRun = (ICommand)cmd.Clone();
+        // Copy the parameters from the original command.
+        commandToRun.Parameters = command.Parameters[1..];
+        commandToRun.Client = command.Client;
+
+        _ = commandToRun?.Run();
+        command.Handled = true;
     }
 
     /// <summary>
