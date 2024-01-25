@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Options;
 using Npgsql;
-using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
 using SmaugX.Core.Data.Hosting;
@@ -71,7 +70,7 @@ public class DatabaseService : IDatabaseService
 
     private async Task<User?> GetUserForAuthAsync(string usernameOrEmail, string password)
     {
-        using var connection = new NpgsqlConnection(SystemConstants.CONNECTION_STRING);
+        using var connection = new NpgsqlConnection(GetConnectionString());
         connection.Open();
 
         // Get users with matching username or email
