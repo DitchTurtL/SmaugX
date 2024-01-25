@@ -126,6 +126,74 @@ public class DatabaseService : IDatabaseService
         return (await connection.QueryAsync<Exit>(query, param)).ToList();
     }
 
+    public int CreateRoom(string roomName)
+    {
+        return Task.Run<int>(async () => await CreateRoomAsync(roomName)).Result;
+    }
+
+    private async Task<int> CreateRoomAsync(string roomName)
+    {
+        using var connection = new NpgsqlConnection(GetConnectionString());
+        connection.Open();
+
+        // Create room with matching name
+        var query = "INSERT INTO rooms (name) VALUES (@roomName) RETURNING id";
+        var param = new { roomName };
+
+        return await connection.QuerySingleAsync<int>(query, param);
+    }
+
+    public bool CreateExit(int currentRoomId, Direction direction, int roomId, bool oneWay)
+    {
+        return Task.Run<bool>(async () => await CreateExitAsync(currentRoomId, direction, roomId, oneWay)).Result;
+    }
+
+    private async Task<bool> CreateExitAsync(int currentRoomId, Direction direction, int roomId, bool oneWay)
+    {
+        using var connection = new NpgsqlConnection(GetConnectionString());
+        connection.Open();
+
+        // Create exit with matching room id
+        var query = "INSERT INTO exits (room_id, direction, destination_room_id, one_way) VALUES (@currentRoomId, @direction, @roomId, @oneWay)";
+        var param = new { currentRoomId, direction, roomId, oneWay };
+
+        return await connection.ExecuteAsync(query, param) > 0;
+    }
+
+    public bool SetRoomName(int id, string roomName)
+    {
+        return Task.Run<bool>(async () => await SetRoomNameAsync(id, roomName)).Result;
+    }
+
+    private async Task<bool> SetRoomNameAsync(int id, string roomName)
+    {
+        using var connection = new NpgsqlConnection(GetConnectionString());
+        connection.Open();
+
+        // Update room with matching id
+        var query = "UPDATE rooms SET name = @roomName WHERE id = @id";
+        var param = new { id, roomName };
+
+        return await connection.ExecuteAsync(query, param) > 0;
+    }
+
+    public bool SetRoomDescription(int id, string roomDescription)
+    {
+        return Task.Run<bool>(async () => await SetRoomDescriptionAsync(id, roomDescription)).Result;
+    }
+
+    private async Task<bool> SetRoomDescriptionAsync(int id, string roomDescription)
+    {
+        using var connection = new NpgsqlConnection(GetConnectionString());
+        connection.Open();
+
+        // Update room with matching id
+        var query = "UPDATE rooms SET description = @roomDescription WHERE id = @id";
+        var param = new { id, roomDescription };
+
+        return await connection.ExecuteAsync(query, param) > 0;
+    }
+
     #endregion
 
 }

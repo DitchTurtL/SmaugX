@@ -1,8 +1,17 @@
-﻿namespace SmaugX.Core.Commands.Commands;
+﻿using SmaugX.Core.Services;
+
+namespace SmaugX.Core.Commands.Commands;
 
 internal class Build : AbstractBaseCommand
 {
+    private readonly IRoomService roomService;
+
     public override string Name => nameof(Build);
+
+    public Build(IRoomService roomService)
+    {
+        this.roomService = roomService;
+    }
 
     public override Task Run()
     {
@@ -13,7 +22,50 @@ internal class Build : AbstractBaseCommand
             return Task.CompletedTask;
         }
 
-        // Stuff....
+        int roomId = 0;
+        switch (parm.ToUpper())
+        {
+            case "ROOM":
+                var roomName = string.Join(' ', Parameters[1..]);
+                if (string.IsNullOrEmpty(roomName))
+                {
+                    Client.SendSystemMessage("Build a room with what name?");
+                    return Task.CompletedTask;
+                }
+
+                roomId = roomService.CreateRoom(Client, roomName);
+                Client.SendSystemMessage($"Created room: {roomName} with Id ({roomId})");
+                break;
+
+            case "EXIT":
+                var direction = Parameters.ElementAtOrDefault(1);
+                if (direction == null)
+                {
+                    Client.SendSystemMessage("Build an exit in what direction?");
+                    return Task.CompletedTask;
+                }
+
+                Int32.TryParse(Parameters.ElementAtOrDefault(2), out roomId);
+                if (roomId == 0)
+                {
+                    Client.SendSystemMessage("Build an exit to what room?");
+                    return Task.CompletedTask;
+                }
+
+                var oneWay = Parameters.ElementAtOrDefault(3) == "one-way";
+
+                var exitCreated = roomService.CreateExit(Client, direction, roomId, oneWay);
+                if (exitCreated)
+                    Client.SendSystemMessage($"Created exit: {direction} to {roomId} {(oneWay ? "(one-way)" : "")}");
+                else
+                    Client.SendSystemMessage($"Failed to create exit: {direction} to {roomId} {(oneWay ? "(one-way)" : "")}");
+                
+                break;
+
+            default:
+                Client.SendSystemMessage("Build what?");
+                break;
+        }
 
         return Task.CompletedTask;
     }
@@ -33,6 +85,8 @@ internal class Build : AbstractBaseCommand
             Build a one-way exit:
             build exit <direction> <room_id> one-way
 
+            Set the Name or Description of a room:
+            See 'Set' command
 
             """.Split(Environment.NewLine);
     }
@@ -45,7 +99,7 @@ internal class Build : AbstractBaseCommand
     /// </summary>
     public override object Clone()
     {
-        return new Build();
+        return new Build(roomService);
     }
 
 }

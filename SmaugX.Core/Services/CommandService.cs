@@ -32,7 +32,8 @@ public class CommandService : ICommandService, ICommandHandler
         // Initialize commands
         commands = new()
         {
-            new Build(),
+            new Build(roomService),
+            new Set(roomService),
         };
     }
 
@@ -104,6 +105,7 @@ public class CommandService : ICommandService, ICommandHandler
     private void HandleModularCommand(ICommand command)
     {
         // Find the command template to clone.
+        // "Build" or "BuildCommand" will both work.
         var cmd = commands.FirstOrDefault(x => x.Name.Equals(command.Name, StringComparison.OrdinalIgnoreCase) ||
         x.Name.Equals(command.Name + "Command"));
 

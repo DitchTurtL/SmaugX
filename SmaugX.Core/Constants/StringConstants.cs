@@ -29,6 +29,11 @@ internal class StringConstants
 
     // Building strings
     public const string BUILD_NO_COMMAND = "You must supply a build command.";
+    public const string NO_PERMISSION = "You do not have permission to do that.";
+
+    // Set strings
+    public const string ROOM_NOT_FOUND = "Room not found.";
+
 
 
     /// <summary>

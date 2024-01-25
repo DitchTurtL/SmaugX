@@ -1,4 +1,5 @@
 ﻿using SmaugX.Core.Data.Characters;
+using SmaugX.Core.Data.Hosting;
 using SmaugX.Core.Data.World.Rooms;
 
 namespace SmaugX.Core.Services;
@@ -11,8 +12,13 @@ public interface IRoomService
     void CharacterJoined(Character character);
 
     Room GetRoomById(int id);
+    int CreateRoom(Client client, string roomName);
+    bool CreateExit(Client client, string direction, int roomId, bool oneWay);
+
     List<Exit> GetExitsByRoomId(int id);
 
     void MoveCharacter(Character character, Direction direction);
     void SendCharacterStatus(Character character);
+    bool SetRoomName(Client client, string roomName);
+    bool SetRoomDescription(Client client, string roomDescription);
 }

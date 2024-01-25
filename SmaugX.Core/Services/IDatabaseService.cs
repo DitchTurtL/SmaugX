@@ -11,4 +11,8 @@ public interface IDatabaseService
     Room? GetRoomById(int id);
     List<Exit> GetExitsByRoomId(int id);
     User? GetUserForAuth(string? usernameOrEmail, string password);
+    int CreateRoom(string roomName);
+    bool CreateExit(int currentRoomId, Direction direction, int roomId, bool oneWay);
+    bool SetRoomName(int id, string roomName);
+    bool SetRoomDescription(int id, string roomDescription);
 }
