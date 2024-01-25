@@ -41,7 +41,7 @@ internal class Build : AbstractBaseCommand
     /// Creates a clone of the command object.
     /// This is used to create a new instance of the command for each client that runs it.
     /// Parameters are copied in the CommandService.
-    /// References should be passed to the new command here.
+    /// Dependencies should be passed to the new command instance here.
     /// </summary>
     public override object Clone()
     {
