@@ -10,5 +10,5 @@ public interface IDatabaseService
     List<Character> GetCharactersByUserId(int id);
     Room? GetRoomById(int id);
     List<Exit> GetExitsByRoomId(int id);
-    User? GetUserForAuth(string usernameOrEmail, string password);
+    User? GetUserForAuth(string? usernameOrEmail, string password);
 }

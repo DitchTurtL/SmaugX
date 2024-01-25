@@ -1,6 +1,7 @@
 ﻿using Serilog;
 using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Authentication;
+using SmaugX.Core.Data.Hosting;
 using SmaugX.Core.Services;
 
 namespace SmaugX.Core.Commands.CommandHandlers;
@@ -12,6 +13,8 @@ internal class AuthenticationHandler : ICommandHandler
 {
     private readonly IGameService gameService;
     private readonly IDatabaseService databaseService;
+
+    private Dictionary<Client, string> userOrEmailForAuth = new();
 
     public AuthenticationHandler(IGameService gameService, IDatabaseService databaseService)
     {
@@ -44,7 +47,7 @@ internal class AuthenticationHandler : ICommandHandler
         }
 
         // If the user supplied an email, save it and prompt for password.
-        command.Client.AuthenticatedEmailOrUsername = command.Name;
+        userOrEmailForAuth[command.Client] = command.Name;
 
         command.Client.AuthenticationState = AuthenticationState.WaitingForPassword;
         command.Client.SendSystemMessage(StringConstants.AUTHENTICATION_PROMPT_PASSWORD);
@@ -63,12 +66,13 @@ internal class AuthenticationHandler : ICommandHandler
         }
 
         // If the user supplied a password, attempt to authenticate.
-        var user = databaseService.GetUserForAuth(command.Client.AuthenticatedEmailOrUsername, command.Name);
+        userOrEmailForAuth.TryGetValue(command.Client, out var emailOrUsername);
+        var user = databaseService.GetUserForAuth(emailOrUsername, command.Name);
 
         // If a user wasn't found, fail authentication and prompt again.
         if (user == null)
         {
-            Log.Warning("Failed authentication for {emailOrUsername} from {ipAddress}", command.Client.AuthenticatedEmailOrUsername, command.Client.IpAddress);
+            Log.Warning("Failed authentication for {emailOrUsername} from {ipAddress}", emailOrUsername, command.Client.IpAddress);
             command.Client.SendSystemMessage(StringConstants.AUTHENTICATION_INVALID_CREDENTIALS);
             command.Client.StartAuthentication(command.Client);
             command.Handled = true;

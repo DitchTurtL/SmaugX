@@ -61,8 +61,11 @@ public class DatabaseService : IDatabaseService
 
     #region Users
 
-    public User? GetUserForAuth(string usernameOrEmail, string password)
+    public User? GetUserForAuth(string? usernameOrEmail, string password)
     {
+        if (string.IsNullOrEmpty(usernameOrEmail) || string.IsNullOrEmpty(password))
+            return null;
+
         return Task.Run<User?>(async () => await GetUserForAuthAsync(usernameOrEmail, password)).Result;
     }
 

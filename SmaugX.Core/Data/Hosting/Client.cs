@@ -29,7 +29,6 @@ public class Client
     private NetworkStream? Stream { get; set; }
 
     // Authentication
-    public string AuthenticatedEmailOrUsername { get; set; } = string.Empty;
     internal User? AuthenticatedUser { get; set; } = null;
     internal AuthenticationState AuthenticationState { get; set; } = AuthenticationState.NotAuthenticated;
 
