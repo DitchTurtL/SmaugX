@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS public.characters
     user_id bigint NOT NULL DEFAULT nextval('characters_user_id_seq'::regclass),
     name character varying COLLATE pg_catalog."default" NOT NULL,
     current_room_id bigint,
+    permissions integer NOT NULL DEFAULT 1,
     CONSTRAINT characters_pkey PRIMARY KEY (id),
     CONSTRAINT current_room_id_fk FOREIGN KEY (current_room_id)
         REFERENCES public.rooms (id) MATCH SIMPLE

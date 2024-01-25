@@ -1,4 +1,5 @@
 ﻿using SmaugX.Core.Constants;
+using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Hosting;
 using SmaugX.Core.Data.World.Rooms;
 using SmaugX.Core.Enums;
@@ -12,6 +13,7 @@ public class Character
     public int Id { get; set; }
     public int UserId { get; set; }
     public string Name { get; set; } = StringConstants.DEFAULT_CHARACTER_NAME;
+    public Permissions Permissions { get; set; } = Permissions.Player;
     public int Race { get; set; }
     public int Class { get; set; }
 

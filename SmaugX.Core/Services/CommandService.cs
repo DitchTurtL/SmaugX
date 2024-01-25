@@ -24,6 +24,7 @@ public class CommandService : ICommandService, ICommandHandler
             new AuthenticationHandler(gameService, databaseService),
             new CharacterCreationHandler(databaseService),
             new MovementHandler(roomService),
+            new BuildHandler(roomService),
         };   
     }
 
