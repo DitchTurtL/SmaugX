@@ -8,4 +8,5 @@ public interface ICommand
     string[] Parameters { get; set; }
     bool Handled { get; set; }
     Client Client { get; set; }
+    void Run();
 }

@@ -3,6 +3,7 @@ using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Hosting;
 using SmaugX.Core.Data.World.Rooms;
 using SmaugX.Core.Enums;
+using SmaugX.Core.Helpers;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -29,4 +30,8 @@ public class Character
     [NotMapped]
     public Client? Client { get; set; } = null!;
 
+    internal bool HasPermission(Permissions builder)
+    {
+        return PermissionsHelper.HasPermission(Permissions, builder);
+    }
 }

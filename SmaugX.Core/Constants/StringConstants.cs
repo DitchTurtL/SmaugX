@@ -25,6 +25,11 @@ internal class StringConstants
 
     public const string UNKNOWN_COMMAND = "You don't know how to do that.";
     public const string BAD_MOVE_DIRECTION = "You can't go that way.";
+    public const string PERMISSION_DENIED = "Permission Denied!";
+
+    // Building strings
+    public const string BUILD_NO_COMMAND = "You must supply a build command.";
+
 
     /// <summary>
     /// Returns the string representation of the given position.
