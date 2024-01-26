@@ -9,6 +9,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["SmaugX.Host/SmaugX.Host.csproj", "SmaugX.Host/"]
 COPY ["SmaugX.Core/SmaugX.Core.csproj", "SmaugX.Core/"]
+
 RUN dotnet restore "./SmaugX.Host/./SmaugX.Host.csproj"
 COPY . .
 WORKDIR "/src/SmaugX.Host"
@@ -21,7 +22,4 @@ RUN dotnet publish "./SmaugX.Host.csproj" -c $BUILD_CONFIGURATION -o /app/publis
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-
-EXPOSE 4000
-
 ENTRYPOINT ["dotnet", "SmaugX.Host.dll"]

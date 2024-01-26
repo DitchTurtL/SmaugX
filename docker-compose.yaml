@@ -8,3 +8,22 @@ services:
       dockerfile: Dockerfile
     ports:
       - "4000:4000"
+    depends_on:
+      - postgres
+    networks:
+      - smaugx-network
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: smaugx
+      POSTGRES_PASSWORD: smaugx
+      POSTGRES_DB: smaugx
+    ports:
+      - "5432:5432"
+    networks:
+      - smaugx-network
+
+networks:
+  smaugx-network:
