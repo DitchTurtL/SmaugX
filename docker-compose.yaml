@@ -10,6 +10,8 @@ services:
       - "4000:4000"
     depends_on:
       - postgres
+    environment:
+      CONNECTION_STRING: "Host=127.0.0.1;Port=5432;Username=smaugx;Password=smaugx;Database=smaugx;Pooling=true;"
     networks:
       - smaugx-network
 

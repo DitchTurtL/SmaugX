@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using Serilog;
 using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
 using SmaugX.Core.Data.Hosting;
@@ -18,7 +19,17 @@ public class DatabaseService : IDatabaseService
         this.configuration = configuration.Value;
     }
 
-    private string GetConnectionString() => configuration.ConnectionString;
+    private string GetConnectionString()
+    {
+        var connStr = configuration.ConnectionString;
+        if (string.IsNullOrEmpty(connStr))
+            connStr = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+
+        if (string.IsNullOrEmpty(connStr))
+            Log.Error("No connection string found.");
+
+        return connStr;
+    }
 
     #region Characters
 
