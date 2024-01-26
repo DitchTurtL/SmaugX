@@ -28,8 +28,6 @@ public class DatabaseService : IDatabaseService
         if (string.IsNullOrEmpty(connStr))
             Log.Error("No connection string found.");
 
-        Log.Information("Using connection string: {connStr}", connStr);
-
         return connStr;
     }
 
@@ -205,6 +203,14 @@ public class DatabaseService : IDatabaseService
         var param = new { id, roomDescription };
 
         return await connection.ExecuteAsync(query, param) > 0;
+    }
+
+    public async Task ExecuteScript(string contents)
+    {
+        using var connection = new NpgsqlConnection(GetConnectionString());
+        connection.Open();
+
+        await connection.ExecuteAsync(contents);
     }
 
     #endregion

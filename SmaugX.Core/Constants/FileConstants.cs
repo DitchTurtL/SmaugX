@@ -16,6 +16,7 @@ public static class FileConstants
     public static readonly string MOTD_FILE_PATH = Path.Combine(HOSTING_CONTENT_PATH, MOTD_FILE);
 
     // Database
-    public const string DATABASE_FILE = "smaugx.db";
-    public static readonly string DATABASE_PATH = Path.Combine(CONTENT_DIRECTORY, DATABASE_FILE);
+    public const string SQL_DIRECTORY = "SQLScripts";
+    public static readonly string SQL_PATH = Path.Combine(Environment.CurrentDirectory, SQL_DIRECTORY);
+
 }

@@ -36,7 +36,7 @@ using var host = Host.CreateDefaultBuilder(args)
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();
         services.Configure<SmaugXSettings>(configuration.GetSection("SmaugXSettings"));
-
+        services.AddHostedService<DatabaseInitializer>();
         services.AddHostedService<TcpServerService>();
         services.AddSingleton<IDatabaseService, DatabaseService>();
         services.AddSingleton<IGameService, GameService>();

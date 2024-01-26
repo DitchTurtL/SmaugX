@@ -13,6 +13,11 @@
     <None Remove="appsettings.json" />
     <None Remove="Content\Hosting\Banner.dat" />
     <None Remove="Content\Hosting\MOTD.dat" />
+    <None Remove="SQLScripts\CREATE_characters.sql" />
+    <None Remove="SQLScripts\CREATE_exits.sql" />
+    <None Remove="SQLScripts\CREATE_rooms.sql" />
+    <None Remove="SQLScripts\CREATE_users.sql" />
+    <None Remove="SQLScripts\INSERT_test_data.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,6 +28,21 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Hosting\MOTD.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQLScripts\CREATE_characters.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQLScripts\CREATE_exits.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQLScripts\CREATE_rooms.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQLScripts\CREATE_users.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SQLScripts\INSERT_test_data.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

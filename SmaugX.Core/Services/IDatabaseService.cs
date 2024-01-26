@@ -15,4 +15,5 @@ public interface IDatabaseService
     bool CreateExit(int currentRoomId, Direction direction, int roomId, bool oneWay);
     bool SetRoomName(int id, string roomName);
     bool SetRoomDescription(int id, string roomDescription);
+    Task ExecuteScript(string contents);
 }

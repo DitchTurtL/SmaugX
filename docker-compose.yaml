@@ -9,7 +9,8 @@ services:
     ports:
       - "4000:4000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       CONNECTION_STRING: "Host=127.0.0.1;Port=5432;Username=smaugx;Password=smaugx;Database=smaugx;Pooling=true;"
     networks:
@@ -22,6 +23,11 @@ services:
       POSTGRES_USER: smaugx
       POSTGRES_PASSWORD: smaugx
       POSTGRES_DB: smaugx
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smaugx -d smaugx"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - smaugx-network
 
