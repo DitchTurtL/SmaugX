@@ -28,8 +28,6 @@ public class DatabaseService : IDatabaseService
         if (string.IsNullOrEmpty(connStr))
             Log.Error("No connection string found.");
 
-        Log.Information("Using connection string: {connStr}", connStr);
-
         return connStr;
     }
 
