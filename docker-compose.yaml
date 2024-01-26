@@ -20,8 +20,6 @@ services:
       POSTGRES_USER: smaugx
       POSTGRES_PASSWORD: smaugx
       POSTGRES_DB: smaugx
-    ports:
-      - "127.0.0.1:5432:5432"
     networks:
       - smaugx-network
 
