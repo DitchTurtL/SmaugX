@@ -114,7 +114,7 @@ public class DatabaseService : IDatabaseService
         connection.Open();
 
         // Get room with matching id
-        var query = "SELECT * FROM rooms WHERE id = @id";
+        var query = $"SELECT {Room.COLUMNS} FROM {Room.TABLE_NAME} WHERE id = @id";
         var param = new { id };
 
         return await connection.QueryFirstOrDefaultAsync<Room>(query, param);
@@ -165,7 +165,7 @@ public class DatabaseService : IDatabaseService
         connection.Open();
 
         // Create exit with matching room id
-        var query = "INSERT INTO exits (room_id, direction, destination_room_id, one_way) VALUES (@currentRoomId, @direction, @roomId, @oneWay)";
+        var query = "INSERT INTO exits (room_id, direction, destination_room_id) VALUES (@currentRoomId, @direction, @roomId)";
         var param = new { currentRoomId, direction, roomId, oneWay };
 
         return await connection.ExecuteAsync(query, param) > 0;
@@ -199,7 +199,7 @@ public class DatabaseService : IDatabaseService
         connection.Open();
 
         // Update room with matching id
-        var query = "UPDATE rooms SET description = @roomDescription WHERE id = @id";
+        var query = "UPDATE rooms SET short_description = @roomDescription WHERE id = @id";
         var param = new { id, roomDescription };
 
         return await connection.ExecuteAsync(query, param) > 0;

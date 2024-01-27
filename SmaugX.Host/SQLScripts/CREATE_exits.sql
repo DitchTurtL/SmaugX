@@ -13,11 +13,7 @@ BEGIN
         id bigint NOT NULL DEFAULT nextval('exits_id_seq'::regclass),
         room_id bigint NOT NULL,
         destination_room_id bigint NOT NULL,
-        name character varying COLLATE pg_catalog."default" NOT NULL,
-        short_description character varying COLLATE pg_catalog."default",
-        long_description character varying COLLATE pg_catalog."default",
         direction integer NOT NULL,
-        one_way boolean NOT NULL DEFAULT false,
         CONSTRAINT exits_pkey PRIMARY KEY (id)
     )
 

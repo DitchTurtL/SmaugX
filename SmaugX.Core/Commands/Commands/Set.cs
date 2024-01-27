@@ -84,6 +84,6 @@ internal class Set : AbstractBaseCommand
 
     public override object Clone()
     {
-        throw new NotImplementedException();
+        return new Set(roomService);
     }
 }

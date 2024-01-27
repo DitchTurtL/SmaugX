@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Dapper;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 using SmaugX.Core.Constants;
 
@@ -16,7 +17,9 @@ public class DatabaseInitializer : IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         Log.Information("Initializing database...");
-        
+
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
         var files = Directory.GetFiles(FileConstants.SQL_PATH, "*.sql");
 
         // Sort alphabetically by filename so our testdata can go after table creation.

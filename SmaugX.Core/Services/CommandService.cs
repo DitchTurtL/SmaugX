@@ -34,6 +34,7 @@ public class CommandService : ICommandService, ICommandHandler
         {
             new Build(roomService),
             new Set(roomService),
+            new Look(roomService),
         };
     }
 
@@ -112,10 +113,10 @@ public class CommandService : ICommandService, ICommandHandler
         if (cmd == null)
             return;
         
-        var args = command.Parameters.ToList().Skip(1);
+        var args = command.Parameters.ToList();
 
-        // If there are no parameters, or the first parameter is HELP, show the help for the command.
-        if (!args.Any() || args.First().Equals("HELP", StringComparison.OrdinalIgnoreCase))
+        // If the first parameter is  HELP, show the help for the command.
+        if (args.Any() && args.First().Equals("HELP", StringComparison.OrdinalIgnoreCase))
         {
             var helpLines = cmd.GetHelp(args.ToArray());
             command.Client.SendLines(helpLines);
@@ -123,13 +124,12 @@ public class CommandService : ICommandService, ICommandHandler
             return;
         }
 
-        // If we got more than one parameter and it wasn't a help command,
-        // we need to clone the command and run it in context for this user.
+        // If it wasn't a help command, we need to clone the command and run it in context for this user.
 
         // Clone the command template.
         var commandToRun = (ICommand)cmd.Clone();
         // Copy the parameters from the original command.
-        commandToRun.Parameters = command.Parameters[1..];
+        commandToRun.Parameters = args.ToArray();
         commandToRun.Client = command.Client;
 
         _ = commandToRun?.Run();

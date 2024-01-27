@@ -37,18 +37,30 @@ internal class Build : AbstractBaseCommand
                 Client.SendSystemMessage($"Created room: {roomName} with Id ({roomId})");
                 break;
 
-            case "EXIT":
-                var direction = Parameters.ElementAtOrDefault(1);
-                if (direction == null)
+            case "TELEPORT":
+                Int32.TryParse(Parameters.ElementAtOrDefault(1), out roomId);
+                if (roomId == 0)
                 {
-                    Client.SendSystemMessage("Build an exit in what direction?");
+                    Client.SendSystemMessage("Teleport to what room?");
                     return Task.CompletedTask;
                 }
 
-                Int32.TryParse(Parameters.ElementAtOrDefault(2), out roomId);
+                roomService.Teleport(Client, roomId);
+
+                break;
+            case "EXIT":
+
+                Int32.TryParse(Parameters.ElementAtOrDefault(1), out roomId);
                 if (roomId == 0)
                 {
                     Client.SendSystemMessage("Build an exit to what room?");
+                    return Task.CompletedTask;
+                }
+
+                var direction = Parameters.ElementAtOrDefault(2);
+                if (direction == null)
+                {
+                    Client.SendSystemMessage("Build an exit in what direction?");
                     return Task.CompletedTask;
                 }
 
@@ -79,11 +91,11 @@ internal class Build : AbstractBaseCommand
             Build a new room:
             build room <name> (returns Room ID)
 
-            Build an exit to another room:
-            build exit <direction> <room_id>
+            Teleport to a room:
+            build teleport <room_id>
 
-            Build a one-way exit:
-            build exit <direction> <room_id> one-way
+            Build an exit to another room:
+            build exit <room_id> <direction>
 
             Set the Name or Description of a room:
             See 'Set' command

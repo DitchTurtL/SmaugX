@@ -20,6 +20,7 @@ internal class MovementHandler : ICommandHandler
         if (direction == Direction.None)
             return;
 
+        
         HandleMovement(command, direction);
     }
 

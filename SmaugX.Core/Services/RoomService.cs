@@ -49,7 +49,7 @@ public class RoomService : IRoomService
         }
 
         // Get the room the character is trying to move to.
-        var room = GetRoomById(exit.RoomId);
+        var room = GetRoomById(exit.DestinationRoomId);
         if (room == null)
         {
             Log.Warning("Room with id {id} not found in database.", exit.RoomId);
@@ -74,7 +74,11 @@ public class RoomService : IRoomService
 
         // if not in cache, get from database
         if (room == null)
+        {
             room = databaseService.GetRoomById(id);
+            if (room != null)
+                Rooms.Add(room);
+        }
 
         // If not in database, log error and return void room
         if (room == null)
@@ -84,8 +88,6 @@ public class RoomService : IRoomService
             // The Void should always be loaded into this cache.
             return Rooms[0];
         }
-
-        Rooms.Add(room);
 
         return room;
     }
@@ -135,7 +137,16 @@ public class RoomService : IRoomService
         }
 
         var nDirection = Enum.TryParse(direction, true, out Direction dir) ? dir : Direction.None;
-        return databaseService.CreateExit(client.Character.CurrentRoomId, nDirection, roomId, oneWay);
+        var success = databaseService.CreateExit(client.Character.CurrentRoomId, nDirection, roomId, oneWay);
+
+        if (success)
+        {
+            var room = GetRoomById(client.Character.CurrentRoomId);
+            room.Exits = null;
+        }
+
+
+        return success;
     }
 
     public bool SetRoomName(Client client, string roomName)
@@ -183,6 +194,8 @@ public class RoomService : IRoomService
             return false;
         }
 
+        roomDescription = roomDescription.ReplaceLineEndings().Replace("\"", string.Empty);
+
         var success = databaseService.SetRoomDescription(room.Id, roomDescription);
         if (!success)
         {
@@ -192,5 +205,27 @@ public class RoomService : IRoomService
 
         room.ShortDescription = roomDescription;
         return true;
+    }
+
+    public void Teleport(Client client, int roomId)
+    {
+        if (!client.Character!.HasPermission(Permissions.Builder))
+        {
+            client.SendSystemMessage(StringConstants.NO_PERMISSION);
+            return;
+        }
+
+        var room = GetRoomById(roomId);
+        if (room == null)
+        {
+            client.SendSystemMessage(StringConstants.ROOM_NOT_FOUND);
+            return;
+        }
+
+        client.Character.CurrentRoom = room;
+        client.Character.CurrentRoomId = room.Id;
+
+        client.SendSystemMessage($"You have been teleported to {room.Name}.");
+        client.SendSystemMessage($"Room Id: {room.Id}");
     }
 }
