@@ -148,7 +148,7 @@ public class DatabaseService : IDatabaseService
         connection.Open();
 
         // Create room with matching name
-        var query = "INSERT INTO rooms (name, created_by) VALUES (@roomName, @user_id) RETURNING id";
+        var query = "INSERT INTO rooms (name, created_by) VALUES (@roomName, @userId) RETURNING id";
         var param = new { roomName, userId };
 
         return await connection.QuerySingleAsync<int>(query, param);
