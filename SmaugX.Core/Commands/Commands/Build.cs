@@ -66,7 +66,7 @@ internal class Build : AbstractBaseCommand
 
                 var oneWay = Parameters.ElementAtOrDefault(3) == "one-way";
 
-                var exitCreated = roomService.CreateExit(Client, direction, roomId, oneWay);
+                var exitCreated = roomService.CreateExit(Client, direction, roomId);
                 if (exitCreated)
                     Client.SendSystemMessage($"Created exit: {direction} to {roomId} {(oneWay ? "(one-way)" : "")}");
                 else

@@ -137,36 +137,36 @@ public class DatabaseService : IDatabaseService
         return (await connection.QueryAsync<Exit>(query, param)).ToList();
     }
 
-    public int CreateRoom(string roomName)
+    public int CreateRoom(string roomName, int userId)
     {
-        return Task.Run<int>(async () => await CreateRoomAsync(roomName)).Result;
+        return Task.Run<int>(async () => await CreateRoomAsync(roomName, userId)).Result;
     }
 
-    private async Task<int> CreateRoomAsync(string roomName)
+    private async Task<int> CreateRoomAsync(string roomName, int userId)
     {
         using var connection = new NpgsqlConnection(GetConnectionString());
         connection.Open();
 
         // Create room with matching name
-        var query = "INSERT INTO rooms (name) VALUES (@roomName) RETURNING id";
-        var param = new { roomName };
+        var query = "INSERT INTO rooms (name, created_by) VALUES (@roomName, @user_id) RETURNING id";
+        var param = new { roomName, userId };
 
         return await connection.QuerySingleAsync<int>(query, param);
     }
 
-    public bool CreateExit(int currentRoomId, Direction direction, int roomId, bool oneWay)
+    public bool CreateExit(int currentRoomId, Direction direction, int roomId, int userId)
     {
-        return Task.Run<bool>(async () => await CreateExitAsync(currentRoomId, direction, roomId, oneWay)).Result;
+        return Task.Run<bool>(async () => await CreateExitAsync(currentRoomId, direction, roomId, userId)).Result;
     }
 
-    private async Task<bool> CreateExitAsync(int currentRoomId, Direction direction, int roomId, bool oneWay)
+    private async Task<bool> CreateExitAsync(int currentRoomId, Direction direction, int roomId, int userId)
     {
         using var connection = new NpgsqlConnection(GetConnectionString());
         connection.Open();
 
         // Create exit with matching room id
-        var query = "INSERT INTO exits (room_id, direction, destination_room_id) VALUES (@currentRoomId, @direction, @roomId)";
-        var param = new { currentRoomId, direction, roomId, oneWay };
+        var query = "INSERT INTO exits (room_id, direction, destination_room_id, created_by) VALUES (@currentRoomId, @direction, @roomId, @userId)";
+        var param = new { currentRoomId, direction, roomId, userId };
 
         return await connection.ExecuteAsync(query, param) > 0;
     }

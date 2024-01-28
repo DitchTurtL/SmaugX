@@ -19,9 +19,12 @@ public class Room
 
     public string LongDescription { get; set; } = string.Empty;
 
+    public int CreatedBy { get; set; } = 0;
+    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+
     [NotMapped]
     public List<Exit?> Exits { get; set; } = null!;
 
     public const string TABLE_NAME = "rooms";
-    public const string COLUMNS = "id, name, short_description, long_description";
+    public const string COLUMNS = "id, name, short_description, long_description, created_by";
 }
