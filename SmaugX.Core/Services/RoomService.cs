@@ -208,8 +208,8 @@ public class RoomService : IRoomService
             return;
         }
 
-        client.Character.CurrentRoom = room;
-        client.Character.CurrentRoomId = room.Id;
+        room.CharacterLeft(client.Character);
+        room.CharacterEntered(client.Character);
 
         client.SendSystemMessage($"You have been teleported to {room.Name}.");
         client.SendSystemMessage($"Room Id: {room.Id}");

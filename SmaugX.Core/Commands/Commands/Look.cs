@@ -1,4 +1,5 @@
 ﻿using SmaugX.Core.Services;
+using System.Text;
 
 namespace SmaugX.Core.Commands.Commands;
 
@@ -22,6 +23,15 @@ internal class Look : AbstractBaseCommand
             return Task.CompletedTask;
         }
 
+        var standingHere = new StringBuilder();
+        foreach (var c in room.Characters)
+        {
+            if (c == Client.Character)
+                continue;
+
+            standingHere.Append($"{c.Name} is {c.Position} here." + Environment.NewLine);
+        }
+
         var exits = roomService.GetExitsByRoomId(room.Id);
 
         string exitsString = string.Empty;
@@ -36,6 +46,7 @@ internal class Look : AbstractBaseCommand
             {new string('-', room.Name.Length + 1)}
             {room.ShortDescription}
 
+            {standingHere}
             Exits: {exitsString}
 
             """.Replace("\\n", Environment.NewLine);
