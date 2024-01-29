@@ -108,7 +108,7 @@ public class Client
         if (string.IsNullOrEmpty(data))
             return;
 
-        Log.Information("Received - {ipAddress}: {data}", IpAddress, data);
+        Log.Debug("Received - {ipAddress}: {data}", IpAddress, data);
         var command = new Command(this, data);
         commandService.HandleCommand(command);
     }
