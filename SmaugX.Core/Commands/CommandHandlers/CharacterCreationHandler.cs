@@ -7,10 +7,12 @@ namespace SmaugX.Core.Commands.CommandHandlers;
 internal class CharacterCreationHandler : ICommandHandler
 {
     private readonly IDatabaseService databaseService;
+    private readonly IRoomService roomService;
 
-    public CharacterCreationHandler(IDatabaseService databaseService)
+    public CharacterCreationHandler(IDatabaseService databaseService, IRoomService roomService)
     {
         this.databaseService = databaseService;
+        this.roomService = roomService;
     }
 
     public void HandleCommand(ICommand command)
@@ -101,6 +103,7 @@ internal class CharacterCreationHandler : ICommandHandler
 
         // Found character, load it
         command.Client.CharacterCreationState = CharacterCreationState.Loaded;
+        character.roomService = roomService;
         command.Client.CharacterSelected(character);
         command.Handled = true;
     }

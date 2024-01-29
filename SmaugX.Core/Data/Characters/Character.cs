@@ -4,6 +4,7 @@ using SmaugX.Core.Data.Hosting;
 using SmaugX.Core.Data.World.Rooms;
 using SmaugX.Core.Enums;
 using SmaugX.Core.Helpers;
+using SmaugX.Core.Services;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
@@ -11,6 +12,8 @@ namespace SmaugX.Core.Data.Characters;
 
 public class Character
 {
+    public IRoomService roomService;
+
     public int Id { get; set; }
     public int UserId { get; set; }
     public string Name { get; set; } = StringConstants.DEFAULT_CHARACTER_NAME;
@@ -33,5 +36,21 @@ public class Character
     internal bool HasPermission(Permissions builder)
     {
         return PermissionsHelper.HasPermission(Permissions, builder);
+    }
+
+    /// <summary>
+    /// Sends the character's status to the client.
+    /// "You are standing in the middle of a forest."
+    /// "You are floating in The Void."
+    /// </summary>
+    public void SendStatus()
+    {
+        var currentRoom = CurrentRoom ??= roomService.GetRoomById(CurrentRoomId);
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"You are {StringConstants.GetPosition(Position)}");
+        sb.AppendLine($" in {currentRoom.Name}.");
+        Client!.SendLine(sb.ToString(), Helpers.MessageColor.Status);
+
     }
 }

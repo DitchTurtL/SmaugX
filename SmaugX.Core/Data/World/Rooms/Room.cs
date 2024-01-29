@@ -1,11 +1,14 @@
 ﻿using SmaugX.Core.Constants;
-using System.ComponentModel;
+using SmaugX.Core.Data.Characters;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmaugX.Core.Data.World.Rooms;
 
 public class Room
 {
+    public const string TABLE_NAME = "rooms";
+    public const string COLUMNS = "id, name, short_description, long_description, created_by";
+
     public int Id { get; set; }
 
     /// <summary>
@@ -25,6 +28,31 @@ public class Room
     [NotMapped]
     public List<Exit?> Exits { get; set; } = null!;
 
-    public const string TABLE_NAME = "rooms";
-    public const string COLUMNS = "id, name, short_description, long_description, created_by";
+    [NotMapped]
+    public List<Character> Characters { get; set; } = new();
+
+    public void CharacterLeft(Character character)
+    {
+        Characters.Remove(character);
+
+        // Notify the room that the character has left.
+        foreach (var c in Characters)
+            c.Client!.SendSystemMessage($"{character.Name} left the room.");
+    }
+
+    public void CharacterEntered(Character character)
+    {
+        character.CurrentRoom = this;
+        character.CurrentRoomId = Id;
+
+        // Notify the room that the character has entered.
+        foreach (var c in Characters)
+        {
+            c.Client!.SendSystemMessage($"{character.Name} entered the room.");
+        }
+
+        Characters.Add(character);
+
+        character.SendStatus();
+    }
 }

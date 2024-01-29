@@ -59,7 +59,7 @@ public class GameService : IGameService
         character.Client!.SendSeparator();
 
         // Play the character's current status to the client.
-        roomService.SendCharacterStatus(character);
+        character.SendStatus();
 
     }
 

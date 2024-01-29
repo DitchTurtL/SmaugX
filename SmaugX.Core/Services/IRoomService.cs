@@ -18,7 +18,6 @@ public interface IRoomService
     List<Exit> GetExitsByRoomId(int id);
 
     void MoveCharacter(Character character, Direction direction);
-    void SendCharacterStatus(Character character);
     bool SetRoomName(Client client, string roomName);
     bool SetRoomDescription(Client client, string roomDescription);
     void Teleport(Client client, int roomId);

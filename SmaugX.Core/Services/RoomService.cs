@@ -57,11 +57,11 @@ public class RoomService : IRoomService
             return;
         }
 
-        // Update the character's current room.
-        character.CurrentRoom = room;
-        character.CurrentRoomId = room.Id;
+        var leavingRoom = character.CurrentRoom;
+        var enteringRoom = room;
 
-        SendCharacterStatus(character);
+        leavingRoom.CharacterLeft(character);
+        enteringRoom.CharacterEntered(character);
     }
 
     /// <summary>
@@ -92,21 +92,7 @@ public class RoomService : IRoomService
         return room;
     }
 
-    /// <summary>
-    /// Sends the character's status to the client.
-    /// "You are standing in the middle of a forest."
-    /// "You are floating in The Void."
-    /// </summary>
-    public void SendCharacterStatus(Character character)
-    {
-        var currentRoom = character.CurrentRoom ??= GetRoomById(character.CurrentRoomId);
 
-        var sb = new StringBuilder();
-        sb.AppendLine($"You are {StringConstants.GetPosition(character.Position)}");
-        sb.AppendLine($" in {currentRoom.Name}.");
-        character.Client!.SendLine(sb.ToString(), Helpers.MessageColor.Status);
-
-    }
 
     /// <summary>
     /// Returns a list of exits for the specified room id.
