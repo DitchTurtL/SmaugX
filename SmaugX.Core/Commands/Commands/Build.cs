@@ -1,4 +1,5 @@
 ﻿using SmaugX.Core.Services;
+using System.Text;
 
 namespace SmaugX.Core.Commands.Commands;
 
@@ -73,7 +74,23 @@ internal class Build : AbstractBaseCommand
                     Client.SendSystemMessage($"Failed to create exit: {direction} to {roomId} {(oneWay ? "(one-way)" : "")}");
                 
                 break;
+            case "GET-IDS":
+                var sbExits = new StringBuilder();
+                foreach (var exit in roomService.GetExitsByRoomId(Client.Character!.CurrentRoomId))
+                {
+                    var name = roomService.GetRoomById(exit.DestinationRoomId)?.Name ?? "Unknown Room Name";
+                    sbExits.AppendLine($"{exit.Direction}: {exit.DestinationRoomId} - {name}");
+                }
 
+                var idString = $"""
+                    Room Id: {Client.Character!.CurrentRoomId}
+                    Exits:
+                    {sbExits}
+
+                    """.Split(Environment.NewLine);
+                Client.SendLines(idString);
+
+                break;
             default:
                 Client.SendSystemMessage("Build what?");
                 break;
@@ -99,6 +116,9 @@ internal class Build : AbstractBaseCommand
 
             Set the Name or Description of a room:
             See 'Set' command
+
+            Get information about the current room:
+            build get-ids
 
             """.Split(Environment.NewLine);
     }

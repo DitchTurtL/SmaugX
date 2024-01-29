@@ -12,7 +12,7 @@ public interface IDatabaseService
     List<Exit> GetExitsByRoomId(int id);
     User? GetUserForAuth(string? usernameOrEmail, string password);
     int CreateRoom(string roomName, int userId);
-    bool CreateExit(int currentRoomId, Direction direction, int roomId, int userId);
+    int CreateExit(int currentRoomId, Direction direction, int roomId, int userId);
     bool SetRoomName(int id, string roomName);
     bool SetRoomDescription(int id, string roomDescription);
     Task ExecuteScript(string contents);

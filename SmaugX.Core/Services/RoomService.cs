@@ -128,25 +128,25 @@ public class RoomService : IRoomService
         return databaseService.CreateRoom(roomName, client.Character.Id);
     }
 
-    public bool CreateExit(Client client, string direction, int roomId)
+    public int CreateExit(Client client, string direction, int roomId)
     {
         if (!client.Character!.HasPermission(Permissions.Builder))
         {
             client.SendSystemMessage(StringConstants.NO_PERMISSION);
-            return false;
+            return -1;
         }
 
         var nDirection = Enum.TryParse(direction, true, out Direction dir) ? dir : Direction.None;
-        var success = databaseService.CreateExit(client.Character.CurrentRoomId, nDirection, roomId, client.Character.Id);
+        var exitId = databaseService.CreateExit(client.Character.CurrentRoomId, nDirection, roomId, client.Character.Id);
 
-        if (success)
+        if (exitId > -1)
         {
             var room = GetRoomById(client.Character.CurrentRoomId);
             room.Exits = null;
         }
 
 
-        return success;
+        return exitId;
     }
 
     public bool SetRoomName(Client client, string roomName)
