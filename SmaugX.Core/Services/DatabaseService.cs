@@ -154,21 +154,21 @@ public class DatabaseService : IDatabaseService
         return await connection.QuerySingleAsync<int>(query, param);
     }
 
-    public bool CreateExit(int currentRoomId, Direction direction, int roomId, int userId)
+    public int CreateExit(int currentRoomId, Direction direction, int roomId, int userId)
     {
-        return Task.Run<bool>(async () => await CreateExitAsync(currentRoomId, direction, roomId, userId)).Result;
+        return Task.Run<int>(async () => await CreateExitAsync(currentRoomId, direction, roomId, userId)).Result;
     }
 
-    private async Task<bool> CreateExitAsync(int currentRoomId, Direction direction, int roomId, int userId)
+    private async Task<int> CreateExitAsync(int currentRoomId, Direction direction, int roomId, int userId)
     {
         using var connection = new NpgsqlConnection(GetConnectionString());
         connection.Open();
 
         // Create exit with matching room id
-        var query = "INSERT INTO exits (room_id, direction, destination_room_id, created_by) VALUES (@currentRoomId, @direction, @roomId, @userId)";
+        var query = "INSERT INTO exits (room_id, direction, destination_room_id, created_by) VALUES (@currentRoomId, @direction, @roomId, @userId) RETURNING id";
         var param = new { currentRoomId, direction, roomId, userId };
 
-        return await connection.ExecuteAsync(query, param) > 0;
+        return await connection.QuerySingleAsync<int>(query, param);
     }
 
     public bool SetRoomName(int id, string roomName)

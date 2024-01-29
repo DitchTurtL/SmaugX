@@ -13,7 +13,7 @@ public interface IRoomService
 
     Room GetRoomById(int id);
     int CreateRoom(Client client, string roomName);
-    bool CreateExit(Client client, string direction, int roomId);
+    int CreateExit(Client client, string direction, int roomId);
 
     List<Exit> GetExitsByRoomId(int id);
 
