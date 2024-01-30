@@ -20,19 +20,6 @@ public class DatabaseInitializer : IHostedService
 
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-        var files = Directory.GetFiles(FileConstants.SQL_PATH, "*.sql");
-
-        // Sort alphabetically by filename so our testdata can go after table creation.
-        files = files.OrderBy(x => Path.GetFileName(x)).ToArray();
-
-        foreach (var file in files)
-        {
-            Log.Information("running script: {file}", file);
-            var contents = File.ReadAllText(file);
-            await databaseService.ExecuteScript(contents);
-
-        }
-
         Log.Information("Database initialized.");
     }
 

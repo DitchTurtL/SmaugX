@@ -304,4 +304,20 @@ public class DatabaseService : IDatabaseService
         await connection.ExecuteAsync(query, param);
     }
 
+    public bool UpdateUserPassword(int id, string newPassword)
+    {
+        return Task.Run<bool>(async () => await UpdateUserPasswordAsync(id, newPassword)).Result;
+    }
+
+    private async Task<bool> UpdateUserPasswordAsync(int id, string newPassword)
+    {
+        using var connection = new NpgsqlConnection(GetConnectionString());
+        connection.Open();
+
+        // Update user with matching id
+        var query = "UPDATE users SET password = @newPassword WHERE id = @id";
+        var param = new { id, newPassword = PasswordHasher.HashPassword(newPassword) };
+
+        return await connection.ExecuteAsync(query, param) > 0;
+    }
 }
