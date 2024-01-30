@@ -21,5 +21,6 @@ internal class CharacterCreationConstants
     public const string CHARACTER_NO_CHARACTERS_TO_LOAD = "You have no characters to load.";
     public const string CHARACTER_SELECT_HEADER = "Select a character to load:";
     public const string CHARACTER_NOT_FOUND = "Character not found.";
+    public const string CHARACTER_ALREADY_EXISTS = "That character already exists.";
 
 }

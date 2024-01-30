@@ -25,12 +25,6 @@ internal class CharacterCreationHandler : ICommandHandler
             case CharacterCreationState.WaitingForName:
                 HandleName(command);
                 break;
-            case CharacterCreationState.WaitingForRace:
-                HandleRace(command);
-                break;
-            case CharacterCreationState.WaitingForClass:
-                HandleClass(command);
-                break;
             case CharacterCreationState.Loading:
                 HandleLoading(command);
                 break;
@@ -77,6 +71,32 @@ internal class CharacterCreationHandler : ICommandHandler
         }
     }
 
+
+    private void HandleName(ICommand command)
+    {
+        // if nothing was supplied, prompt again.
+        if (string.IsNullOrEmpty(command.Name))
+        {
+            command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_NEW_NAME);
+            command.Handled = true;
+            return;
+        }
+
+        // Check if the character already exists.
+        var tmpCharacter = databaseService.GetCharacterByIdAndName(command.Client.AuthenticatedUser!.Id, command.Name);
+        if (tmpCharacter != null)
+        {
+            command.Client.SendSystemMessage(CharacterCreationConstants.CHARACTER_ALREADY_EXISTS);
+            command.Client.StartCharacterCreation(command.Client);
+            command.Handled = true;
+            return;
+        }
+
+        // If the user supplied a name, create the character.
+        var newCharacter = databaseService.CreateCharacter(command.Client.AuthenticatedUser.Id!, command.Name);
+        HandleLoading(command);
+    }
+
     /// <summary>
     /// Handles the loading of a character.
     /// </summary>
@@ -104,22 +124,14 @@ internal class CharacterCreationHandler : ICommandHandler
         // Found character, load it
         command.Client.CharacterCreationState = CharacterCreationState.Loaded;
         character.roomService = roomService;
+        if (character.CurrentRoomId <= 1)
+        {
+            character.CurrentRoomId = roomService.GetStartingRoomId();
+        }
+
+
+
         command.Client.CharacterSelected(character);
         command.Handled = true;
-    }
-
-    private void HandleClass(ICommand command)
-    {
-        throw new NotImplementedException();
-    }
-
-    private void HandleRace(ICommand command)
-    {
-        throw new NotImplementedException();
-    }
-
-    private void HandleName(ICommand command)
-    {
-        throw new NotImplementedException();
     }
 }

@@ -9,6 +9,6 @@ internal class SystemConstants
     public const int PORT = 4000;
 
     // Defaults
-    public const int DEFAULT_STARTING_ROOM_ID = 1;
+    public const int DEFAULT_STARTING_ROOM_ID = 2; // Something other than the void.
 
 }

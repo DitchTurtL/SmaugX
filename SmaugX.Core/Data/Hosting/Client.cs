@@ -135,7 +135,7 @@ public class Client
     /// </summary>
     internal void StartCharacterCreation(Client client)
     {
-        SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_START);
+        SendSystemMessage(CharacterCreationConstants.CHARACTER_PROMPT_START.Split(Environment.NewLine));
     }
 
     /// <summary>
@@ -186,6 +186,12 @@ public class Client
     internal void SendSystemMessage(string text)
     {
         SendLine(text, MessageColor.System);
+    }
+
+    internal void SendSystemMessage(string[] lines)
+    {
+        foreach (var line in lines)
+            SendSystemMessage(line);
     }
 
     /// <summary>
@@ -262,6 +268,11 @@ public class Client
     private async Task SendData(byte[] data)
     {
         await Stream!.WriteAsync(data, 0, data.Length);
+    }
+
+    internal void SendSystemMessage(object aUTHENTICATION_PROMPT_PASSWORD_CONFIRMATION)
+    {
+        throw new NotImplementedException();
     }
 
     #endregion

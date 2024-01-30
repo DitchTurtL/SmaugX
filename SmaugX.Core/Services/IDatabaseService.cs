@@ -6,8 +6,11 @@ namespace SmaugX.Core.Services;
 
 public interface IDatabaseService
 {
+    Character? GetCharacterByName(string name);
     Character? GetCharacterByIdAndName(int id, string name);
+    Character? CreateCharacter(int userId, string characterName);
     List<Character> GetCharactersByUserId(int id);
+    void CharacterMoved(int userId, int newRoomid);
     Room? GetRoomById(int id);
     List<Exit> GetExitsByRoomId(int id);
     User? GetUserForAuth(string? usernameOrEmail, string password);
@@ -16,4 +19,5 @@ public interface IDatabaseService
     bool SetRoomName(int id, string roomName);
     bool SetRoomDescription(int id, string roomDescription);
     Task ExecuteScript(string contents);
+    User? CreateUser(string username, string password);
 }

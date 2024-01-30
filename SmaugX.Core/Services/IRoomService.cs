@@ -21,4 +21,5 @@ public interface IRoomService
     bool SetRoomName(Client client, string roomName);
     bool SetRoomDescription(Client client, string roomDescription);
     void Teleport(Client client, int roomId);
+    int GetStartingRoomId();
 }

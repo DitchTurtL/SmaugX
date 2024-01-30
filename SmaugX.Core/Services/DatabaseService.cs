@@ -33,6 +33,48 @@ public class DatabaseService : IDatabaseService
 
     #region Characters
 
+    public Character? CreateCharacter(int userId, string characterName)
+    {
+        return Task.Run<Character?>(async () => await CreateCharacterAsync(userId, characterName)).Result;
+    }
+
+    private async Task<Character?> CreateCharacterAsync(int userId, string characterName)
+    {
+        using var connection = new NpgsqlConnection(GetConnectionString());
+        connection.Open();
+
+        // Create character with matching name and user id
+        var query = "INSERT INTO characters (name, user_id) VALUES (@characterName, @userId) RETURNING id";
+        var param = new { characterName, userId };
+
+        var id = await connection.QuerySingleAsync<int>(query, param);
+
+        return new Character
+        {
+            Id = id,
+            Name = characterName,
+            UserId = userId
+        };
+    }
+
+
+    public Character? GetCharacterByName(string name)
+    {
+        return Task.Run<Character?>(async () => await GetCharacterByNameAsync(name)).Result;
+    }
+
+    private async Task<Character?> GetCharacterByNameAsync(string name)
+    {
+        using var connection = new NpgsqlConnection(GetConnectionString());
+        connection.Open();
+
+        // Get character with matching name
+        var query = "SELECT * FROM characters WHERE name = @name";
+        var param = new { name };
+
+        return await connection.QueryFirstOrDefaultAsync<Character>(query, param);
+    }
+
     public Character? GetCharacterByIdAndName(int id, string name)
     {
         return Task.Run<Character?>(async () => await GetCharacterByIdAndNameAsync(id, name)).Result;
@@ -70,6 +112,33 @@ public class DatabaseService : IDatabaseService
     #endregion
 
     #region Users
+
+    public User? CreateUser(string username, string password)
+    {
+        return Task.Run<User?>(async () => await CreateUserAsync(username, password)).Result;
+    }
+
+    private async Task<User?> CreateUserAsync(string username, string password)
+    {
+        const string email = "none@none.com";
+
+        using var connection = new NpgsqlConnection(GetConnectionString());
+        connection.Open();
+
+        // Create user with matching username
+        var query = "INSERT INTO users (name, email, password) VALUES (@username, @email, @password) RETURNING id";
+        var param = new { username, email, password = PasswordHasher.HashPassword(password) };
+
+        var id = await connection.QuerySingleAsync<int>(query, param);
+
+        return new User
+        {
+            Id = id,
+            Name = username,
+            Password = password
+        };
+    }
+
 
     public User? GetUserForAuth(string? usernameOrEmail, string password)
     {
@@ -213,6 +282,26 @@ public class DatabaseService : IDatabaseService
         await connection.ExecuteAsync(contents);
     }
 
+
+
+
     #endregion
+
+    public void CharacterMoved(int userId, int newRoomid)
+    {
+        Task.Run(async () => await CharacterMovedAsync(userId, newRoomid));
+    }
+
+    private async Task CharacterMovedAsync(int userId, int newRoomid)
+    {
+        using var connection = new NpgsqlConnection(GetConnectionString());
+        connection.Open();
+
+        // Update character with matching user id
+        var query = "UPDATE characters SET current_room_id = @newRoomid WHERE user_id = @userId";
+        var param = new { userId, newRoomid };
+
+        await connection.ExecuteAsync(query, param);
+    }
 
 }

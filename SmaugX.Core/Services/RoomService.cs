@@ -4,7 +4,6 @@ using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
 using SmaugX.Core.Data.Hosting;
 using SmaugX.Core.Data.World.Rooms;
-using System.Text;
 
 namespace SmaugX.Core.Services;
 
@@ -59,6 +58,8 @@ public class RoomService : IRoomService
 
         var leavingRoom = character.CurrentRoom;
         var enteringRoom = room;
+
+        databaseService.CharacterMoved(character.Id, room.Id);
 
         leavingRoom.CharacterLeft(character);
         enteringRoom.CharacterEntered(character);
@@ -213,5 +214,10 @@ public class RoomService : IRoomService
 
         client.SendSystemMessage($"You have been teleported to {room.Name}.");
         client.SendSystemMessage($"Room Id: {room.Id}");
+    }
+
+    public int GetStartingRoomId()
+    {
+        return SystemConstants.DEFAULT_STARTING_ROOM_ID;
     }
 }

@@ -23,6 +23,7 @@ internal class Look : AbstractBaseCommand
             return Task.CompletedTask;
         }
 
+        // Get list of players in this room
         var standingHere = new StringBuilder();
         foreach (var c in room.Characters)
         {
@@ -32,14 +33,15 @@ internal class Look : AbstractBaseCommand
             standingHere.Append($"{c.Name} is {c.Position} here." + Environment.NewLine);
         }
 
+        // Get list of exits
         var exits = roomService.GetExitsByRoomId(room.Id);
-
         string exitsString = string.Empty;
         if (!exits.Any())
             exitsString = "#YELLOW(*None*)";
         else
             exitsString = $"#GREEN(*{string.Join(", ", exits.Select(e => e.Direction.ToString()))}*)";
         
+        // Build room description
         var roomDesc = $"""
             {new string('-', room.Name.Length + 1)}
             {room.Name}

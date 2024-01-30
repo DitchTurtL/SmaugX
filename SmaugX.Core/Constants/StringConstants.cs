@@ -6,9 +6,13 @@ namespace SmaugX.Core.Constants;
 internal class StringConstants
 {
     // Authentication Prompts
-    public const string AUTHENTICATION_PROMPT_USERNAME = "Enter your username or email: ";
+    public const string AUTHENTICATION_PROMPT_USERNAME = "Enter your username or email, or type 'new' to register as a new user: ";
+    public const string AUTHENTICATION_PROMPT_NEW_USERNAME = "Enter your username: ";
+    public const string AUTHENTICATION_USER_ALREADY_EXISTS = "That user already exists.";
     public const string AUTHENTICATION_PROMPT_PASSWORD = "Enter your password: ";
+    public const string AUTHENTICATION_PROMPT_PASSWORD_CONFIRMATION = "Confirm your password: ";
     public const string AUTHENTICATION_INVALID_CREDENTIALS = "Invalid credentials.";
+    public const string AUTHENTICATION_FAILED_CREATE_USER = "Failed to create user.";
     public const string AUTHENTICATION_SUCCESS = "Authentication successful.";
 
     // Default message colors
