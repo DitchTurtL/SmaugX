@@ -20,8 +20,8 @@ public class RoomService : IRoomService
 
     public void CharacterJoined(Character character)
     {
-
-
+        var room = GetRoomById(character.CurrentRoomId);
+        room.CharacterEntered(character);
     }
 
     /// <summary>
@@ -219,5 +219,11 @@ public class RoomService : IRoomService
     public int GetStartingRoomId()
     {
         return SystemConstants.DEFAULT_STARTING_ROOM_ID;
+    }
+
+    public void Say(Client client, string message)
+    {
+        var room = GetRoomById(client.Character!.CurrentRoomId);
+        room.Say(client.Character, message);
     }
 }

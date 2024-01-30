@@ -129,8 +129,6 @@ internal class CharacterCreationHandler : ICommandHandler
             character.CurrentRoomId = roomService.GetStartingRoomId();
         }
 
-
-
         command.Client.CharacterSelected(character);
         command.Handled = true;
     }

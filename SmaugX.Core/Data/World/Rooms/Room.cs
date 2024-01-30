@@ -55,4 +55,15 @@ public class Room
 
         character.SendStatus();
     }
+
+    internal void Say(Character character, string message)
+    {
+        foreach (var c in Characters)
+        {
+            if (c != character)
+                c.Client!.SendSystemMessage($"{character.Name} says, \"{message}\"");
+            else
+                c.Client!.SendSystemMessage($"You say, \"{message}\"");
+        }
+    }
 }

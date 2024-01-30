@@ -36,6 +36,7 @@ public class CommandService : ICommandService, ICommandHandler
             new Set(roomService),
             new Look(roomService),
             new Passwd(databaseService),
+            new Say(roomService),
         };
     }
 
