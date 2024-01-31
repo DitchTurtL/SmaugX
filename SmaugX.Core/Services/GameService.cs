@@ -16,6 +16,13 @@ public class GameService : IGameService
         this.roomService = roomService;
     }
 
+    private Task Tick()
+    {
+        roomService.Tick();
+
+        return Task.CompletedTask;
+    }
+
     /// <summary>
     /// Called once the client has authenticated and is ready to 
     /// pick a character or create a new one.

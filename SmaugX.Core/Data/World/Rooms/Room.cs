@@ -31,6 +31,15 @@ public class Room
     [NotMapped]
     public List<Character> Characters { get; set; } = new();
 
+    public Task Tick()
+    {
+        foreach (var character in Characters)
+            character.Tick();
+
+
+        return Task.CompletedTask;
+    }
+
     public void CharacterLeft(Character character)
     {
         Characters.Remove(character);

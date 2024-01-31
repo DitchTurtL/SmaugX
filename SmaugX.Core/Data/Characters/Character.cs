@@ -33,6 +33,12 @@ public class Character
     [NotMapped]
     public Client? Client { get; set; } = null!;
 
+    public Task Tick()
+    {
+
+        return Task.CompletedTask;
+    }
+
     internal bool HasPermission(Permissions builder)
     {
         return PermissionsHelper.HasPermission(Permissions, builder);

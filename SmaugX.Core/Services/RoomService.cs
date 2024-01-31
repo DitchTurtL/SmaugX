@@ -18,6 +18,14 @@ public class RoomService : IRoomService
         this.databaseService = databaseService;
     }
 
+    public Task Tick()
+    {
+        foreach (var room in Rooms)
+            room.Tick();
+
+        return Task.CompletedTask;
+    }
+
     public void CharacterJoined(Character character)
     {
         var room = GetRoomById(character.CurrentRoomId);

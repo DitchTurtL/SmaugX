@@ -10,7 +10,7 @@ public interface IRoomService
     /// Called when a character joins a room.
     /// </summary>
     void CharacterJoined(Character character);
-
+    Task Tick();
     Room GetRoomById(int id);
     int CreateRoom(Client client, string roomName);
     int CreateExit(Client client, string direction, int roomId);

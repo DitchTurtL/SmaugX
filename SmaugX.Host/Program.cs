@@ -42,6 +42,7 @@ using var host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IGameService, GameService>();
         services.AddSingleton<IRoomService, RoomService>();
         services.AddSingleton<ICommandService, CommandService>();
+        services.AddSingleton<IMobService, MobService>();
     })
     .Build();
 
