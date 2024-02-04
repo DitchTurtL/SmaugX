@@ -7,5 +7,6 @@ public class Item : IItem
     public string ShortDescription { get; set; }
     public string LongDescription { get; set; }
     public int Weight { get; set; }
+    public int Cost { get; set; }
     public bool CanCarry { get; set; }
 }

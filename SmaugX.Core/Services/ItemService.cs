@@ -1,4 +1,5 @@
 ﻿using SmaugX.Core.Data.Items;
+using SmaugX.Core.Data.Items.Weapons;
 
 namespace SmaugX.Core.Services;
 
@@ -26,7 +27,7 @@ public class ItemService : IItemService
         // Load coded items
         var localItems = new List<IItem>
         {
-
+            new WoodenDagger(),
         };
         Items.AddRange(localItems);
         
