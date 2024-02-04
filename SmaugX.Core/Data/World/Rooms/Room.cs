@@ -1,5 +1,6 @@
 ﻿using SmaugX.Core.Constants;
 using SmaugX.Core.Data.Characters;
+using SmaugX.Core.Data.Items;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmaugX.Core.Data.World.Rooms;
@@ -25,11 +26,9 @@ public class Room
     public int CreatedBy { get; set; } = 0;
     public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
-    [NotMapped]
     public List<Exit?> Exits { get; set; } = null!;
-
-    [NotMapped]
     public List<Character> Characters { get; set; } = new();
+    public List<IItem> Inventory { get; set; } = new();
 
     public Task Tick()
     {
