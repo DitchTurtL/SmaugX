@@ -1,5 +1,6 @@
 ﻿using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
+using SmaugX.Core.Data.Items;
 using SmaugX.Core.Data.World.Rooms;
 
 namespace SmaugX.Core.Services;
@@ -21,4 +22,5 @@ public interface IDatabaseService
     bool SetRoomDescription(int id, string roomDescription);
     Task ExecuteScript(string contents);
     User? CreateUser(string username, string password);
+    List<Item> GetWorldItems();
 }

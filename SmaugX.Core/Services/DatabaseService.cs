@@ -5,6 +5,7 @@ using Serilog;
 using SmaugX.Core.Data.Authentication;
 using SmaugX.Core.Data.Characters;
 using SmaugX.Core.Data.Hosting;
+using SmaugX.Core.Data.Items;
 using SmaugX.Core.Data.World.Rooms;
 using SmaugX.Core.Helpers;
 
@@ -319,5 +320,20 @@ public class DatabaseService : IDatabaseService
         var param = new { id, newPassword = PasswordHasher.HashPassword(newPassword) };
 
         return await connection.ExecuteAsync(query, param) > 0;
+    }
+
+    public List<Item> GetWorldItems()
+    {
+        return Task.Run<IEnumerable<Item>>(async () => await GetWorldItemsAsync()).Result.ToList();
+    }
+
+    private async Task<IEnumerable<Item>> GetWorldItemsAsync()
+    {
+        using var connection = new NpgsqlConnection(GetConnectionString());
+        connection.Open();
+
+        // Get all items
+        var query = "SELECT * FROM items";
+        return await connection.QueryAsync<Item>(query);
     }
 }
