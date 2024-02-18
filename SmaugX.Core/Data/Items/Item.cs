@@ -1,4 +1,6 @@
-﻿namespace SmaugX.Core.Data.Items;
+﻿using SmaugX.Core.Data.Characters;
+
+namespace SmaugX.Core.Data.Items;
 
 public class Item : IItem
 {
@@ -9,4 +11,5 @@ public class Item : IItem
     public int Weight { get; set; }
     public int Cost { get; set; }
     public bool CanCarry { get; set; }
+    public EquipmentSlot Slot { get; set; }
 }

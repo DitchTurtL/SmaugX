@@ -27,22 +27,24 @@ public class ItemService : IItemService
         // Load coded items
         var localItems = new List<IItem>
         {
-            new WoodenDagger(),
+            new IronDagger(),
         };
         Items.AddRange(localItems);
-        
-
-
     }
 
-    public IItem GetItemByName(string name)
+    /// <summary>
+    /// Return an instance of an item by its id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public IItem? GetItemById(int id)
     {
-        return Items.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-    }
+        var item = Items.FirstOrDefault(x => x.Id == id);
+        if (item == null)
+            return null;
 
-    public IItem GetItemById(int id)
-    {
-        return Items.FirstOrDefault(x => x.Id == id);
+        var itemInstance = Activator.CreateInstance(item.GetType()) as IItem;
+        return itemInstance;
     }
 
 

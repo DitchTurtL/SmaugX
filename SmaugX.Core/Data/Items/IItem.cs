@@ -1,4 +1,6 @@
-﻿namespace SmaugX.Core.Data.Items;
+﻿using SmaugX.Core.Data.Characters;
+
+namespace SmaugX.Core.Data.Items;
 
 public interface IItem
 {
@@ -9,4 +11,5 @@ public interface IItem
     int Weight { get; }
     int Cost { get; }
     bool CanCarry { get; }
+    EquipmentSlot Slot { get; }
 }
